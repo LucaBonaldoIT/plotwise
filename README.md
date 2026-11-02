@@ -6,12 +6,13 @@
 
 Read a dataset one variable, two variables and many variables at a time, by playing with it: univariate, bivariate and multivariate analysis in hands-on labs, entirely client-side.
 
+[![Live app](https://img.shields.io/badge/live%20app-plotwise.lucabonaldo.dev-d6502b?style=flat-square)](https://plotwise.lucabonaldo.dev)
 [![JavaScript](https://img.shields.io/badge/JavaScript-ES2022-f7df1e?style=flat-square&logo=javascript&logoColor=black)](https://developer.mozilla.org/docs/Web/JavaScript)
 [![Vite](https://img.shields.io/badge/built%20with-Vite-646cff?style=flat-square&logo=vite&logoColor=white)](https://vite.dev/)
 [![D3](https://img.shields.io/badge/charts-D3-f9a03c?style=flat-square&logo=d3dotjs&logoColor=white)](https://d3js.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 
-[Report an issue](https://github.com/LucaBonaldoIT/plotwise/issues) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+[**Launch the app**](https://plotwise.lucabonaldo.dev) · [Report an issue](https://github.com/LucaBonaldoIT/plotwise/issues) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 </div>
 
@@ -71,6 +72,8 @@ Vite prints the local URL, typically `http://localhost:5173`.
 
 `npm run webapp:build` emits a fully static site in `apps/webapp/dist/`. Serve it from any static host (GitHub Pages, Netlify, Cloudflare Pages, S3, or plain nginx). Asset paths are relative, so it also works from a subfolder.
 
+The social preview image `apps/webapp/public/og-image.png` is rendered from `scripts/og-image/og.html` with headless Chrome: run `./scripts/og-image.sh` after changing it.
+
 ## Project structure
 
 ```text
@@ -84,6 +87,8 @@ plotwise/
 │           ├── scripts/ Page shell, title screens and 3D scenes
 │           └── styles/  Page and control styles
 ├── docs/screenshots/    Images used in this README
+├── scripts/
+│   └── og-image.sh      Regenerates the social preview image
 ├── LICENSE              MIT license
 └── build.sh             Static build helper
 ```

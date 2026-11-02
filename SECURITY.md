@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Plotwise is under active development. Security fixes are applied to the latest version on `main`. Older commits are not patched.
+Plotwise is under active development. Security fixes are applied to the latest version on `main` and to the deployed app at [plotwise.lucabonaldo.dev](https://plotwise.lucabonaldo.dev). Older commits are not patched.
 
 ## Reporting a vulnerability
 

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About — Plotwise</title>
+    <meta
+      name="description"
+      content="About Plotwise: who made it, how it is built, and the datasets and open-source libraries it stands on."
+    />
+    <meta name="theme-color" content="#f5f2ea" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body data-chapter="about">
+    <a class="ds-skip-link" href="#main">Skip to content</a>
+
+    <header class="ds-header">
+      <div class="ds-header__inner">
+        <a class="ds-wordmark" href="./" aria-label="Plotwise — home">
+          <span class="ds-wordmark__full">Plotwise</span
+          ><span class="ds-wordmark__mark" aria-hidden="true">pw</span
+          ><span class="ds-wordmark__dot" aria-hidden="true">.</span>
+        </a>
+        <nav class="ds-nav site-nav" aria-label="Chapters">
+          <a href="./" data-home>Intro</a>
+          <a href="univariate.html"
+            ><span class="site-nav__long">Univariate</span
+            ><span class="site-nav__short">Uni</span></a
+          >
+          <a href="bivariate.html"
+            ><span class="site-nav__long">Bivariate</span><span class="site-nav__short">Bi</span></a
+          >
+          <a href="multivariate.html"
+            ><span class="site-nav__long">Multivariate</span
+            ><span class="site-nav__short">Multi</span></a
+          >
+          <a href="about.html" aria-current="page">About</a>
+          <button
+            class="ds-theme-toggle"
+            type="button"
+            aria-label="Dark theme"
+            aria-pressed="false"
+          ></button>
+        </nav>
+      </div>
+    </header>
+    <div class="progress" aria-hidden="true"><div class="progress__bar"></div></div>
+
+    <main id="main">
+      <section class="chapter" aria-labelledby="about-title">
+        <div class="chapter__inner">
+          <div class="chapter__text">
+            <p class="chapter__level">About</p>
+            <h1 class="chapter__title" id="about-title">Credits<span class="ds-accent">.</span></h1>
+            <p class="chapter__lede">
+              Plotwise is a small interactive course on data understanding: reading a dataset one
+              variable, two variables and many variables at a time, by playing with it.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div class="about">
+        <section class="about__block ds-reveal" aria-labelledby="creator-title">
+          <p class="block__index">The creator</p>
+          <div class="creator">
+            <div class="creator__mark" aria-hidden="true">LB<span>.</span></div>
+            <div>
+              <h2 id="creator-title" class="creator__name">Luca Bonaldo</h2>
+              <p class="creator__role">Software engineer · MSc Computer Engineering &amp; AI</p>
+              <p>
+                Designed and built Plotwise. I build scalable systems, IoT platforms and data
+                pipelines, and I like making technical ideas tangible: Flap Lab, PrologEZ and
+                FumbleChess are other tools of mine that run entirely in the browser.
+              </p>
+              <p class="creator__links">
+                <a
+                  class="ds-text-link"
+                  href="https://lucabonaldo.dev"
+                  target="_blank"
+                  rel="noopener"
+                  >lucabonaldo.dev<span aria-hidden="true">&nbsp;&#8599;</span></a
+                >
+                <a
+                  class="ds-text-link"
+                  href="https://github.com/lucabonaldoit"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >GitHub<span aria-hidden="true">&nbsp;&#8599;</span></a
+                >
+                <a
+                  class="ds-text-link"
+                  href="https://linkedin.com/in/luca-bonaldo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >LinkedIn<span aria-hidden="true">&nbsp;&#8599;</span></a
+                >
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section class="about__block ds-reveal" aria-labelledby="data-title">
+          <p class="block__index">Datasets</p>
+          <h2 id="data-title">The data</h2>
+          <ul class="credits">
+            <li>
+              <strong>Titanic</strong>: the passenger list popularized by the Kaggle competition
+              “Titanic: Machine Learning from Disaster” (891 passengers, training set).
+            </li>
+            <li>
+              <strong>Iris</strong>: R. A. Fisher's 1936 measurements of 150 iris flowers, via the
+              UCI Machine Learning Repository.
+            </li>
+            <li>
+              <strong>Bank data</strong> (<code>bank-data.csv</code>): 600 customers and whether
+              they bought a Personal Equity Plan, the classic Weka tutorial dataset.
+            </li>
+            <li>
+              <strong>Eating in the UK</strong>: average grams of 17 foods per person per week in
+              the four UK countries, from the UK government's Family Food survey, made famous by
+              Victor Powell and Lewis Lehe's explainer on setosa.io.
+            </li>
+            <li>
+              <strong>Synthetic data</strong> (skewness and kurtosis samples, ice cream and
+              drownings, 5D blobs, citizens' answers): generated in your browser from a fixed seed.
+            </li>
+          </ul>
+        </section>
+
+        <section class="about__block ds-reveal" aria-labelledby="tech-title">
+          <p class="block__index">Built with</p>
+          <h2 id="tech-title">Open source</h2>
+          <ul class="credits credits--grid">
+            <li><strong>Vite</strong><span>build tool</span></li>
+            <li><strong>three.js</strong><span>3D scenes and the title screen</span></li>
+            <li><strong>D3</strong><span>every 2D chart</span></li>
+            <li><strong>KaTeX</strong><span>the formulas</span></li>
+            <li><strong>Paper &amp; ink</strong><span>the lucabonaldo.dev design system</span></li>
+            <li><strong>Fraunces &amp; Inter</strong><span>typefaces</span></li>
+          </ul>
+          <p class="muted" style="margin-top: 1.25rem; max-width: 40rem">
+            Statistics, PCA (Jacobi eigen-decomposition) and t-SNE are implemented from scratch in
+            plain JavaScript, so you can read exactly what each lab computes. Nothing leaves your
+            browser: no backend, no tracking, no account.
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="ds-footer">
+        <a class="ds-credit" href="https://lucabonaldo.dev" target="_blank" rel="noopener"
+          >Made by <b>Luca Bonaldo</b></a
+        >
+        <p>Plotwise</p>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/pages/about.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1334 @@
+/* ==========================================================================
+   Plotwise — page styles
+   Tokens, base styles, header, buttons, theme and reveal come from
+   @lucabonaldo/design (paper & ink). This file only holds what is specific
+   to the course, and uses the design system's role tokens.
+   ========================================================================== */
+
+:root {
+  --measure: 40rem;
+  --toc-w: 15rem;
+  /* the soft oval that keeps chapter-opener text readable over its art */
+  --chapter-scrim: rgba(245, 242, 234, 0.8);
+  /* categorical series, mirrored from SERIES_LIGHT / SERIES_DARK in lib/chart.js */
+  --series-0: #c2410c;
+  --series-1: #2563a8;
+  --series-2: #13866a;
+  --series-3: #b07d00;
+  --series-4: #7b4fa0;
+}
+
+[data-theme='dark'] {
+  --chapter-scrim: rgba(28, 25, 21, 0.85);
+  --series-0: #e8673f;
+  --series-1: #5b95da;
+  --series-2: #2fab84;
+  --series-3: #ad8222;
+  --series-4: #a679d6;
+}
+
+/* Small-caps labels, same treatment as .ds-overline */
+.caps,
+.block__index,
+.lab__kicker,
+.toc__title,
+.chapter__level,
+.quest__title,
+.readout dt,
+.data-table th,
+.pager__dir {
+  font-size: var(--ds-text-xs);
+  font-weight: 500;
+  letter-spacing: var(--ds-tracking-caps);
+  text-transform: uppercase;
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
+
+.site-nav a[aria-current='page'] {
+  color: var(--ds-text);
+  text-decoration: underline;
+  text-decoration-color: var(--ds-accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.45em;
+}
+
+.site-nav__short {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .site-nav__long {
+    display: none;
+  }
+
+  .site-nav__short {
+    display: inline;
+  }
+
+  .site-nav a[data-home] {
+    display: none;
+  }
+}
+
+.progress {
+  position: fixed;
+  top: var(--ds-header-h);
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 49;
+  pointer-events: none;
+}
+
+.progress__bar {
+  height: 100%;
+  background: var(--ds-accent);
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+}
+
+/* ==========================================================================
+   Chapter opener
+   ========================================================================== */
+
+.chapter {
+  border-bottom: 1px solid var(--ds-line);
+  position: relative;
+  overflow: hidden;
+}
+
+.chapter__inner {
+  max-width: var(--ds-max);
+  margin-inline: auto;
+  padding: clamp(3rem, 10vh, 7rem) var(--ds-gutter) clamp(2.5rem, 7vh, 5rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: end;
+  position: relative;
+  z-index: 1;
+}
+
+.chapter__level {
+  color: var(--ds-accent);
+  margin-bottom: 1.25rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.chapter__level::before {
+  content: '';
+  width: 2rem;
+  height: 1px;
+  background: currentColor;
+}
+
+.chapter__title {
+  font-size: clamp(3rem, 10vw, 7.5rem);
+  font-weight: 580;
+  letter-spacing: -0.025em;
+  line-height: 0.92;
+  margin-bottom: 1.5rem;
+}
+
+.chapter__lede {
+  max-width: 34em;
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  color: var(--ds-text);
+}
+
+/* a soft oval under the title and lede that mutes the art drifting behind them; it eases out over
+   many stops so it has no visible edge */
+.chapter__text {
+  position: relative;
+  isolation: isolate;
+}
+
+.chapter__text::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -18% -14%;
+  background: radial-gradient(
+    closest-side,
+    var(--chapter-scrim) 0%,
+    var(--chapter-scrim) 45%,
+    color-mix(in srgb, var(--chapter-scrim) 85%, transparent) 57%,
+    color-mix(in srgb, var(--chapter-scrim) 64%, transparent) 67%,
+    color-mix(in srgb, var(--chapter-scrim) 42%, transparent) 76%,
+    color-mix(in srgb, var(--chapter-scrim) 22%, transparent) 85%,
+    color-mix(in srgb, var(--chapter-scrim) 8%, transparent) 93%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+.chapter__art {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.chapter__art canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* The quest log: objectives tick off as their section is read */
+.quest {
+  border: 1px solid var(--ds-line);
+  background: color-mix(in srgb, var(--ds-surface) 88%, transparent);
+  backdrop-filter: blur(6px);
+  padding: 1.25rem 1.25rem 1rem;
+  border-radius: var(--ds-radius-lg);
+  max-width: 26rem;
+}
+
+.quest__title {
+  display: flex;
+  justify-content: space-between;
+  color: var(--ds-text-soft);
+  margin-bottom: 0.75rem;
+}
+
+.quest__count {
+  color: var(--ds-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.quest ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+  font-size: var(--ds-text-sm);
+}
+
+.quest li {
+  display: grid;
+  grid-template-columns: 1.1rem 1fr;
+  gap: 0.6rem;
+  align-items: start;
+  color: var(--ds-text-soft);
+  transition: color 300ms var(--ds-ease-out);
+}
+
+.quest li::before {
+  content: '';
+  width: 0.8rem;
+  height: 0.8rem;
+  margin-top: 0.3rem;
+  border: 1px solid var(--ds-line-strong);
+  border-radius: 2px;
+  transition:
+    background 300ms var(--ds-ease-out),
+    border-color 300ms var(--ds-ease-out);
+}
+
+.quest li.is-done {
+  color: var(--ds-text);
+}
+
+.quest li.is-done::before {
+  background: var(--ds-accent-fill);
+  border-color: var(--ds-accent-fill);
+  box-shadow: inset 0 0 0 2px var(--ds-surface);
+}
+
+.quest a {
+  text-decoration: none;
+}
+
+.quest a:hover {
+  color: var(--ds-accent);
+}
+
+@media (min-width: 960px) {
+  .chapter__inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+/* narrow screens: the art plays behind the title only, and the quest log sits below it instead
+   of covering it. The inner wrapper steps aside (display: contents) so the art can share the
+   title's grid row and size itself to it. */
+@media (max-width: 959.98px) {
+  .chapter {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .chapter__inner {
+    display: contents;
+  }
+
+  .chapter__art {
+    position: relative;
+    inset: auto;
+    grid-area: 1 / 1;
+  }
+
+  .chapter__text {
+    grid-area: 1 / 1;
+    padding: clamp(3rem, 10vh, 7rem) var(--ds-gutter) clamp(2.5rem, 7vh, 5rem);
+  }
+
+  /* leave room under the text for the art to show (the galton pile lands there) */
+  .chapter__art + .chapter__inner > .chapter__text {
+    padding-bottom: clamp(7rem, 22vw, 10rem);
+  }
+
+  .chapter__text::before {
+    inset: 8% -30% 30%;
+  }
+
+  .quest {
+    grid-area: 2 / 1;
+    position: relative;
+    z-index: 1;
+    margin: 0 var(--ds-gutter) clamp(2.5rem, 7vh, 5rem);
+  }
+}
+
+/* ==========================================================================
+   Lesson layout: sticky table of contents + content column
+   ========================================================================== */
+
+.lesson {
+  max-width: var(--ds-max);
+  margin-inline: auto;
+  padding-inline: var(--ds-gutter);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.toc {
+  position: sticky;
+  top: var(--ds-header-h);
+  z-index: 20;
+  margin-inline: calc(var(--ds-gutter) * -1);
+  background: var(--ds-bg);
+  border-bottom: 1px solid var(--ds-line);
+}
+
+.toc__title {
+  display: none;
+}
+
+.toc__list {
+  list-style: none;
+  margin: 0;
+  padding: 0.6rem var(--ds-gutter);
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.toc__list::-webkit-scrollbar {
+  display: none;
+}
+
+.toc a {
+  display: block;
+  white-space: nowrap;
+  text-decoration: none;
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text-soft);
+  padding: 0.25rem 0.7rem;
+  border: 1px solid var(--ds-line);
+  border-radius: 999px;
+  transition:
+    color var(--ds-dur-fast) var(--ds-ease-out),
+    border-color var(--ds-dur-fast) var(--ds-ease-out),
+    background var(--ds-dur-fast) var(--ds-ease-out);
+}
+
+.toc a:hover {
+  color: var(--ds-accent);
+}
+
+.toc a[aria-current='true'] {
+  color: var(--ds-on-accent);
+  background: var(--ds-accent-fill);
+  border-color: var(--ds-accent-fill);
+}
+
+.toc__num {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+  margin-right: 0.35em;
+}
+
+@media (min-width: 1100px) {
+  .lesson {
+    grid-template-columns: var(--toc-w) minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 4.5rem);
+  }
+
+  .toc {
+    top: calc(var(--ds-header-h) + 2.5rem);
+    align-self: start;
+    margin: 0;
+    padding-top: clamp(3rem, 8vh, 5rem);
+    border: 0;
+    background: none;
+    max-height: calc(100vh - var(--ds-header-h) - 3rem);
+    overflow-y: auto;
+  }
+
+  .toc__title {
+    display: block;
+    color: var(--ds-text-soft);
+    margin-bottom: 1rem;
+  }
+
+  .toc__list {
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    overflow: visible;
+    border-left: 1px solid var(--ds-line);
+  }
+
+  .toc a {
+    white-space: normal;
+    border: 0;
+    border-radius: 0;
+    padding: 0.4rem 0 0.4rem 1rem;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    line-height: 1.35;
+  }
+
+  .toc a[aria-current='true'] {
+    background: none;
+    color: var(--ds-text);
+    border-left-color: var(--ds-accent);
+  }
+}
+
+/* ==========================================================================
+   Content blocks
+   ========================================================================== */
+
+.block {
+  padding-block: clamp(3.5rem, 9vh, 6.5rem) 0;
+}
+
+.block + .block {
+  margin-top: clamp(1rem, 3vh, 2rem);
+  border-top: 1px solid var(--ds-line);
+}
+
+.block:last-of-type {
+  padding-bottom: clamp(3.5rem, 9vh, 6rem);
+}
+
+.block__head {
+  margin-bottom: 1.75rem;
+}
+
+.block__index {
+  color: var(--ds-accent);
+  margin-bottom: 0.6rem;
+}
+
+.block h2 {
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  letter-spacing: -0.015em;
+}
+
+.block h3 {
+  font-size: clamp(1.35rem, 2.3vw, 1.75rem);
+  margin: 2.75rem 0 0.9rem;
+}
+
+.block h4 {
+  font-size: 1.15rem;
+  margin: 1.75rem 0 0.6rem;
+}
+
+.prose {
+}
+
+.prose > * + * {
+  margin-top: 1rem;
+}
+
+.prose p,
+.prose li {
+  color: var(--ds-text-soft);
+}
+
+.prose strong,
+.prose b,
+.prose em.key {
+  color: var(--ds-text);
+  font-weight: 600;
+  font-style: normal;
+}
+
+.prose .term {
+  color: var(--ds-accent);
+  font-weight: 600;
+}
+
+.lead {
+  font-family: var(--ds-font-display);
+  font-size: clamp(1.3rem, 2.3vw, 1.7rem);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  color: var(--ds-text);
+  max-width: 30em;
+  margin-bottom: 1.5rem;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.2rem;
+}
+
+.prose li + li {
+  margin-top: 0.35rem;
+}
+
+.prose ul li::marker {
+  color: var(--ds-accent);
+}
+
+.prose ul ul {
+  margin-top: 0.4rem;
+}
+
+.prose code,
+code {
+  font-family: var(--ds-font-mono);
+  font-size: 0.88em;
+  background: var(--ds-bg-soft);
+  padding: 0.1em 0.35em;
+  border-radius: var(--ds-radius);
+}
+
+/* Two-up list of definitions (e.g. "central tendency" / "dispersion") */
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem 2.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 720px) {
+  .split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.split--3 {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 900px) {
+  .split--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.card {
+  border-top: 2px solid var(--ds-text);
+  padding-top: 0.9rem;
+}
+
+.card h4 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.card p,
+.card li {
+  color: var(--ds-text-soft);
+  font-size: var(--ds-text-md);
+}
+
+.card ul {
+  padding-left: 1.1rem;
+  margin: 0;
+}
+
+.card--accent {
+  border-top-color: var(--ds-accent);
+}
+
+/* ==========================================================================
+   Formulas
+   ========================================================================== */
+
+.formula {
+  margin: 1.5rem 0;
+  padding: 1.25rem clamp(1rem, 3vw, 2rem);
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-line);
+  border-left: 3px solid var(--ds-accent);
+  border-radius: 0 var(--ds-radius-lg) var(--ds-radius-lg) 0;
+  overflow-x: auto;
+}
+
+.formula__name {
+  display: block;
+  font-size: var(--ds-text-xs);
+  font-weight: 500;
+  letter-spacing: var(--ds-tracking-caps);
+  text-transform: uppercase;
+  color: var(--ds-text-soft);
+  margin-bottom: 0.25rem;
+}
+
+.formula .katex-display {
+  margin: 0.4rem 0;
+}
+
+.formula__note {
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text-soft);
+  margin-top: 0.5rem;
+}
+
+.formula-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0 1.5rem;
+}
+
+@media (min-width: 800px) {
+  .formula-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.katex {
+  font-size: 1.08em;
+}
+
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.2rem;
+}
+
+/* ==========================================================================
+   Callouts
+   ========================================================================== */
+
+.callout {
+  margin: 1.75rem 0;
+  padding: 1.1rem 1.25rem;
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-accent-soft);
+  color: var(--ds-text);
+}
+
+.callout p,
+.callout li {
+  color: var(--ds-text);
+}
+
+.callout__title {
+  display: block;
+  font-family: var(--ds-font-display);
+  font-size: 1.15rem;
+  margin-bottom: 0.4rem;
+}
+
+.callout--quote {
+  max-width: var(--measure);
+  background: none;
+  border-left: 3px solid var(--ds-accent);
+  border-radius: 0;
+  padding: 0.25rem 0 0.25rem 1.25rem;
+  font-family: var(--ds-font-display);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  line-height: 1.25;
+}
+
+.callout--note {
+  background: var(--ds-bg-soft);
+}
+
+/* ==========================================================================
+   Labs: plot + controls
+   ========================================================================== */
+
+.lab {
+  margin: 2rem 0 1rem;
+  border: 1px solid var(--ds-line-strong);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-surface);
+  overflow: hidden;
+}
+
+.lab__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.9rem 1.1rem;
+  border-bottom: 1px solid var(--ds-line);
+}
+
+.lab__kicker {
+  color: var(--ds-accent);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lab__kicker::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--ds-accent-fill);
+  box-shadow: 0 0 0 3px var(--ds-accent-soft);
+  animation: pulse 2.4s var(--ds-ease-out) infinite;
+}
+
+@keyframes pulse {
+  50% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab__kicker::before {
+    animation: none;
+  }
+}
+
+.lab .lab__title {
+  font-family: var(--ds-font-display);
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin: 0;
+  flex-basis: 100%;
+}
+
+.lab__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.lab__plot {
+  position: relative;
+  padding: 1rem 0.75rem 0.75rem;
+  min-width: 0;
+}
+
+/* a single chart beside taller controls: keep it centered in its column */
+.lab__plot--center {
+  align-self: center;
+}
+
+.lab__plots {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+}
+
+@media (min-width: 720px) {
+  .lab__plots--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lab__plots--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.plot-title {
+  font-size: var(--ds-text-sm);
+  font-weight: 500;
+  margin: 0 0 0.25rem 0.25rem;
+}
+
+.plot-title small {
+  color: var(--ds-text-soft);
+  font-weight: 400;
+}
+
+.lab__controls {
+  padding: 1rem 1.1rem 1.2rem;
+  border-top: 1px solid var(--ds-line);
+  background: var(--ds-bg-soft);
+  display: grid;
+  gap: 1.1rem;
+  align-content: start;
+}
+
+.lab__foot {
+  padding: 0.75rem 1.1rem;
+  border-top: 1px solid var(--ds-line);
+  font-size: var(--ds-text-sm);
+  color: var(--ds-text-soft);
+}
+
+.lab__foot:empty {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .lab__body--side {
+    grid-template-columns: minmax(0, 1fr) 17rem;
+  }
+
+  .lab__body--side .lab__controls {
+    border-top: 0;
+    border-left: 1px solid var(--ds-line);
+  }
+}
+
+.lab--wide {
+  max-width: none;
+}
+
+.chart-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  font-family: var(--ds-font-text);
+  touch-action: pan-y;
+}
+
+.chart-svg text {
+  fill: var(--ds-text-soft);
+  font-size: 11px;
+}
+
+.chart-svg .axis path,
+.chart-svg .axis line {
+  stroke: var(--ds-line-strong);
+}
+
+.chart-svg .axis text {
+  fill: var(--ds-text-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-svg .axis-label {
+  fill: var(--ds-text-soft);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.chart-svg .legend text {
+  fill: var(--ds-text);
+  font-size: 11px;
+}
+
+.chart-svg .label {
+  fill: var(--ds-text);
+  font-size: 11px;
+  font-weight: 500;
+  paint-order: stroke;
+  stroke: var(--ds-surface);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.chart-svg .label--accent {
+  fill: var(--ds-accent);
+}
+
+.chart-svg .handle {
+  cursor: grab;
+}
+
+.chart-svg .handle:active {
+  cursor: grabbing;
+}
+
+.chart-svg .hit {
+  fill: transparent;
+  cursor: crosshair;
+}
+
+.drag-hint {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  font-size: var(--ds-text-xs);
+  color: var(--ds-text-soft);
+  background: var(--ds-surface);
+  border: 1px dashed var(--ds-line-strong);
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+  pointer-events: none;
+}
+
+/* ---- readout --------------------------------------------------------- */
+
+.readout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+  gap: 0.75rem 1rem;
+  margin: 0;
+}
+
+.readout__item {
+  border-left: 2px solid var(--c, var(--ds-line-strong));
+  padding-left: 0.6rem;
+  min-width: 0;
+}
+
+.readout__item.is-hot {
+  border-left-color: var(--c, var(--ds-accent));
+}
+
+.readout dt {
+  color: var(--ds-text-soft);
+  margin-bottom: 0.1rem;
+  font-size: 0.68rem;
+}
+
+.readout dd {
+  margin: 0;
+  font-family: var(--ds-font-display);
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.readout--tight {
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+}
+
+/* ---- tooltip --------------------------------------------------------- */
+
+.tip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  pointer-events: none;
+  background: var(--ds-text);
+  color: var(--ds-bg);
+  font-size: var(--ds-text-sm);
+  line-height: 1.4;
+  padding: 0.45rem 0.65rem;
+  border-radius: var(--ds-radius-lg);
+  box-shadow: var(--ds-shadow);
+  max-width: 16rem;
+  opacity: 0;
+  transition: opacity 120ms var(--ds-ease-out);
+}
+
+.tip.is-on {
+  opacity: 1;
+}
+
+.tip b {
+  font-weight: 600;
+}
+
+.tip .tip__k {
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  max-width: 100%;
+  border: 1px solid var(--ds-line);
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-surface);
+}
+
+.data-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--ds-text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.5rem 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid var(--ds-line);
+  white-space: nowrap;
+}
+
+.data-table th {
+  color: var(--ds-text-soft);
+  background: var(--ds-bg-soft);
+  font-size: 0.68rem;
+}
+
+.data-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.data-table td.num,
+.data-table th.num {
+  text-align: right;
+}
+
+.data-table td.wrap {
+  white-space: normal;
+  min-width: 14rem;
+}
+
+/* short text that may wrap when space is tight, without the reading-width minimum */
+.data-table td.wrap-free {
+  white-space: normal;
+}
+
+.data-table tbody tr {
+  transition: background var(--ds-dur-fast) var(--ds-ease-out);
+}
+
+.data-table--hover tbody tr:hover,
+.data-table .is-hl {
+  background: var(--ds-accent-soft);
+}
+
+.data-table .col-hl {
+  background: var(--ds-accent-soft);
+}
+
+.data-table input {
+  width: 4rem;
+  font: inherit;
+  padding: 0.2rem 0.35rem;
+  border: 1px solid var(--ds-line-strong);
+  border-radius: var(--ds-radius);
+  background: var(--ds-bg);
+  color: var(--ds-text);
+  text-align: right;
+}
+
+.type-chip {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  color: var(--ds-text-soft);
+}
+
+.type-chip--nominal {
+  color: #2563a8;
+}
+.type-chip--ordinal {
+  color: #13866a;
+}
+.type-chip--interval {
+  color: #b07d00;
+}
+.type-chip--ratio {
+  color: var(--ds-accent);
+}
+
+[data-theme='dark'] .type-chip--nominal {
+  color: #5b95da;
+}
+[data-theme='dark'] .type-chip--ordinal {
+  color: #2fab84;
+}
+[data-theme='dark'] .type-chip--interval {
+  color: #c99a2e;
+}
+
+/* ==========================================================================
+   Pager (prev / next chapter)
+   ========================================================================== */
+
+.pager {
+  border-top: 1px solid var(--ds-line);
+}
+
+.pager__inner {
+  max-width: var(--ds-max);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.pager a {
+  display: block;
+  padding: clamp(2rem, 6vh, 3.5rem) var(--ds-gutter);
+  text-decoration: none;
+  transition: background var(--ds-dur-fast) var(--ds-ease-out);
+}
+
+.pager a:hover {
+  background: var(--ds-bg-soft);
+}
+
+.pager a + a {
+  border-top: 1px solid var(--ds-line);
+}
+
+.pager__dir {
+  color: var(--ds-accent);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.pager__name {
+  font-family: var(--ds-font-display);
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  line-height: 1.1;
+}
+
+.pager__next {
+  text-align: right;
+}
+
+@media (min-width: 720px) {
+  .pager__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pager a + a {
+    border-top: 0;
+    border-left: 1px solid var(--ds-line);
+  }
+
+  .pager__next:only-child {
+    grid-column: 2;
+  }
+}
+
+.site-footer .ds-footer {
+  max-width: var(--ds-max);
+  margin-inline: auto;
+}
+
+/* ==========================================================================
+   Misc
+   ========================================================================== */
+
+.muted {
+  color: var(--ds-text-soft);
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.swatch {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  background: var(--c);
+  margin-right: 0.35em;
+  vertical-align: baseline;
+}
+
+.three-host {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 72vh;
+  border-radius: var(--ds-radius);
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+  background:
+    radial-gradient(circle at 50% 40%, var(--ds-bg-soft), transparent 70%), var(--ds-surface);
+}
+
+.three-host:active {
+  cursor: grabbing;
+}
+
+.three-host canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.three-hint {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.6rem;
+  font-size: var(--ds-text-xs);
+  color: var(--ds-text-soft);
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .three-host {
+    aspect-ratio: 1 / 1;
+  }
+}
+
+.loading {
+  color: var(--ds-text-soft);
+  font-size: var(--ds-text-sm);
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+@media (max-width: 959px) {
+  .chapter__art {
+    opacity: 0.35;
+  }
+}
+
+/* small multiples (pair plots, scatter matrices, correlation grids) */
+.matrix {
+  display: grid;
+  gap: 2px;
+}
+
+.dag {
+  max-width: 26rem;
+  margin: 1rem auto 0;
+}
+
+.dag svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ==========================================================================
+   About
+   ========================================================================== */
+
+.about {
+  max-width: var(--ds-max);
+  margin-inline: auto;
+  padding: 0 var(--ds-gutter) clamp(3rem, 8vh, 6rem);
+}
+
+.about__block {
+  padding-block: clamp(2.5rem, 7vh, 4.5rem);
+  border-bottom: 1px solid var(--ds-line);
+}
+
+.about__block:last-child {
+  border-bottom: 0;
+}
+
+.about__block h2 {
+  font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+  margin-bottom: 1.25rem;
+}
+
+.creator {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem 2.5rem;
+  align-items: start;
+  max-width: 52rem;
+}
+
+@media (min-width: 640px) {
+  .creator {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+}
+
+.creator__mark {
+  width: clamp(5.5rem, 14vw, 8rem);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: var(--ds-radius-lg);
+  background: var(--ds-text);
+  color: var(--ds-bg);
+  font-family: var(--ds-font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 560;
+}
+
+.creator__mark span {
+  color: var(--ds-accent);
+  display: contents;
+}
+
+.creator__name {
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  margin-bottom: 0.4rem;
+}
+
+.creator__role {
+  color: var(--ds-accent);
+  font-size: var(--ds-text-sm);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin-bottom: 1rem;
+}
+
+.creator p:not(.creator__role) {
+  color: var(--ds-text-soft);
+  max-width: 40em;
+}
+
+.creator__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.75rem;
+  margin-top: 1.25rem;
+}
+
+.credits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+  max-width: 46rem;
+}
+
+.credits li {
+  color: var(--ds-text-soft);
+  padding-left: 1rem;
+  border-left: 2px solid var(--ds-line-strong);
+}
+
+.credits strong {
+  color: var(--ds-text);
+}
+
+.credits--grid {
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  max-width: none;
+}
+
+.credits--grid li {
+  display: grid;
+  gap: 0.15rem;
+  border-left-color: var(--ds-accent);
+}
+
+.credits--grid strong {
+  font-family: var(--ds-font-display);
+  font-weight: 500;
+  font-size: 1.15rem;
+}
+
+.credits--grid span {
+  font-size: var(--ds-text-sm);
+}

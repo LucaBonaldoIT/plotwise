@@ -1,0 +1,36 @@
+{
+  "name": "plotwise",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An interactive journey through data understanding: univariate, bivariate and multivariate analysis.",
+  "license": "MIT",
+  "author": "Luca Bonaldo IT (https://github.com/LucaBonaldoIT)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucaBonaldoIT/plotwise.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LucaBonaldoIT/plotwise/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "webapp:dev": "vite --config apps/webapp/vite.config.js apps/webapp",
+    "webapp:build": "vite build --config apps/webapp/vite.config.js apps/webapp",
+    "webapp:preview": "vite preview --config apps/webapp/vite.config.js apps/webapp",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@lucabonaldo/design": "github:LucaBonaldoIT/design#v0.1.0",
+    "d3": "^7.9.0",
+    "katex": "^0.16.22",
+    "three": "^0.180.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9",
+    "vite": "^8.3.2"
+  }
+}

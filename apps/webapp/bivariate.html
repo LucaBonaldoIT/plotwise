@@ -1,0 +1,926 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bivariate analysis — Plotwise</title>
+    <meta
+      name="description"
+      content="Explore the relationship between two variables: scatter plots, box plots, stacked bars, Pearson and Spearman correlation, spurious correlation and mutual information."
+    />
+    <meta name="theme-color" content="#f5f2ea" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body data-chapter="bivariate">
+    <a class="ds-skip-link" href="#main">Skip to content</a>
+
+    <header class="ds-header">
+      <div class="ds-header__inner">
+        <a class="ds-wordmark" href="./" aria-label="Plotwise — home">
+          <span class="ds-wordmark__full">Plotwise</span
+          ><span class="ds-wordmark__mark" aria-hidden="true">pw</span
+          ><span class="ds-wordmark__dot" aria-hidden="true">.</span>
+        </a>
+        <nav class="ds-nav site-nav" aria-label="Chapters">
+          <a href="./" data-home>Intro</a>
+          <a href="univariate.html"
+            ><span class="site-nav__long">Univariate</span
+            ><span class="site-nav__short">Uni</span></a
+          >
+          <a href="bivariate.html" aria-current="page"
+            ><span class="site-nav__long">Bivariate</span><span class="site-nav__short">Bi</span></a
+          >
+          <a href="multivariate.html"
+            ><span class="site-nav__long">Multivariate</span
+            ><span class="site-nav__short">Multi</span></a
+          >
+          <a href="about.html">About</a>
+          <button
+            class="ds-theme-toggle"
+            type="button"
+            aria-label="Dark theme"
+            aria-pressed="false"
+          ></button>
+        </nav>
+      </div>
+    </header>
+    <div class="progress" aria-hidden="true"><div class="progress__bar"></div></div>
+
+    <main id="main">
+      <section class="chapter" aria-labelledby="chapter-title">
+        <div class="chapter__art" id="art" aria-hidden="true"></div>
+        <div class="chapter__inner">
+          <div class="chapter__text">
+            <p class="chapter__level">Level 02</p>
+            <h1 class="chapter__title" id="chapter-title">
+              Bivariate<span class="ds-accent">.</span>
+            </h1>
+            <p class="chapter__lede">
+              Two variables, side by side. Do they move together? Linearly, monotonically, or in
+              some stranger way? And is the link real, or is a third variable pulling both strings?
+            </p>
+          </div>
+          <aside class="quest" aria-label="Objectives">
+            <p class="quest__title"><span>Quest log</span><span class="quest__count"></span></p>
+            <ol></ol>
+          </aside>
+        </div>
+      </section>
+
+      <div class="lesson">
+        <nav class="toc" aria-label="On this page">
+          <p class="toc__title">Level 02</p>
+          <ol class="toc__list">
+            <li>
+              <a href="#what"><span class="toc__num">2.1</span>What it is</a>
+            </li>
+            <li>
+              <a href="#visual"><span class="toc__num">2.2</span>Visual inspection</a>
+            </li>
+            <li>
+              <a href="#slicing"><span class="toc__num">2.3</span>Dataset slicing</a>
+            </li>
+            <li>
+              <a href="#pearson"><span class="toc__num">2.4</span>Pearson</a>
+            </li>
+            <li>
+              <a href="#guess"><span class="toc__num">2.5</span>Guess the correlation</a>
+            </li>
+            <li>
+              <a href="#spearman"><span class="toc__num">2.6</span>Spearman</a>
+            </li>
+            <li>
+              <a href="#versus"><span class="toc__num">2.7</span>Spearman vs Pearson</a>
+            </li>
+            <li>
+              <a href="#spurious"><span class="toc__num">2.8</span>Spurious correlation</a>
+            </li>
+            <li>
+              <a href="#mi"><span class="toc__num">2.9</span>Mutual information</a>
+            </li>
+            <li>
+              <a href="#titanic"><span class="toc__num">2.10</span>Titanic</a>
+            </li>
+          </ol>
+        </nav>
+
+        <div class="lesson__main">
+          <!-- ============ 2.1 ============ -->
+          <section class="block" id="what" aria-labelledby="what-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">2.1</p>
+              <h2 id="what-title">Bivariate analysis</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p class="lead">The study of the relationship between two variables.</p>
+              <p>
+                It helps reveal dependencies, correlations or patterns that can be critical for
+                feature engineering, data cleaning and model design.
+              </p>
+              <ul>
+                <li><strong>Visual inspection</strong>: for all the attribute types.</li>
+                <li>
+                  <strong>Correlation assessment</strong>: for numerical variables, it often
+                  involves calculating correlation coefficients to quantify the strength and
+                  direction of relationships.
+                  <ul>
+                    <li>
+                      Linear correlation: <strong>Pearson</strong> and <strong>Spearman</strong>
+                    </li>
+                    <li>Non-linear correlation: <strong>Mutual Information</strong></li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- ============ 2.2 ============ -->
+          <section class="block" id="visual" aria-labelledby="visual-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">2.2</p>
+              <h2 id="visual-title">Visual inspection</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                The best visualization depends on the involved <strong>variable types</strong> and
+                the <strong>dataset cardinality</strong>. All the labs below use the bank data,
+                colored by whether the customer bought a PEP.
+              </p>
+            </div>
+
+            <h3 class="ds-reveal">Continuous vs continuous</h3>
+            <div class="prose ds-reveal">
+              <ul>
+                <li>
+                  <strong>Scatter plots</strong> when the number of points is manageable (raw data
+                  insight).
+                </li>
+                <li>
+                  <strong>Heatmap</strong> when the number of points is large and you need
+                  aggregation.
+                </li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Age vs income, colored by PEP</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="cc-chart"></div></div>
+                <div class="lab__controls" id="cc-controls"></div>
+              </div>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Pair plot of the bank attributes</h3>
+              </div>
+              <div class="lab__plot"><div id="pairplot"></div></div>
+              <div class="lab__foot">
+                Diagonal: the density of each attribute per PEP class. Off-diagonal: one scatter
+                plot per pair. Hover a cell to read it.
+              </div>
+            </div>
+
+            <h3 class="ds-reveal">Categorical vs continuous</h3>
+            <div class="prose ds-reveal">
+              <ul>
+                <li><strong>Box plot</strong>: one for each value of the categorical attribute.</li>
+                <li><strong>Density plot</strong>: one curve per category.</li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Distribution of a number, by category</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="catnum-chart"></div></div>
+                <div class="lab__controls" id="catnum-controls"></div>
+              </div>
+            </div>
+
+            <h3 class="ds-reveal">Categorical vs categorical</h3>
+            <div class="prose ds-reveal">
+              <ul>
+                <li>
+                  <strong>Stacked bar chart</strong>: x-axis <span class="tex">v_1</span>, color
+                  <span class="tex">v_2</span>, height counts or proportions.
+                </li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Matrix of stacked bar charts by PEP</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="stack-chart"></div></div>
+                <div class="lab__controls" id="stack-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 2.3 ============ -->
+          <section class="block" id="slicing" aria-labelledby="slicing-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">2.3</p>
+              <h2 id="slicing-title">Dataset slicing</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                The data profile can differ for different portions of the dataset, which should be
+                analyzed by subpopulation:
+              </p>
+              <ul>
+                <li>Geographic regions</li>
+                <li>Demographic categories</li>
+                <li>Operating conditions</li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Slice the bank customers</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div id="slice-chart"></div>
+                  <div id="slice-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="slice-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 2.4 ============ -->
+          <section class="block" id="pearson" aria-labelledby="pearson-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">2.4</p>
+              <h2 id="pearson-title">Pearson correlation</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                The correlation between pairs of objects described by attributes (binary or
+                continuous) is a measure of the existence of a <strong>linear relationship</strong>
+                between its attributes.
+              </p>
+            </div>
+            <div class="formula ds-reveal">
+              <span class="formula__name">Pearson correlation</span>
+              <div class="tex tex--block">
+                Corr(\bx, \by) = \frac{Cov(\bx, \by)}{StDev(\bx)\cdot StDev(\by)}
+              </div>
+              <div class="formula-row" style="margin-top: 0.5rem">
+                <div class="tex tex--block">
+                  Cov(\bx, \by) = \frac{1}{n}\sum_{k=1}^{n}(x_k - \xb)(y_k - \yb)
+                </div>
+                <div class="tex tex--block">
+                  StDev(\bx) = \sqrt{\frac{1}{n}\sum_{k=1}^{n}(x_k - \xb)^2}
+                </div>
+              </div>
+            </div>
+            <div class="prose ds-reveal">
+              <ul>
+                <li>
+                  Pearson correlation normalizes covariance by the product of standard deviations →
+                  it is <strong>scale-free</strong>.
+                </li>
+                <li>
+                  The correlation varies in <span class="tex">[-1, 1]</span>. A correlation of 1
+                  (−1) means that the attributes can be mutually expressed by a linear relationship
+                  of the type <span class="tex">x = a\,y + b</span>.
+                </li>
+                <li>
+                  There could still be <strong>non-linear relationships</strong> between the data
+                  that would therefore not be captured!
+                </li>
+                <li>
+                  Correlation can also be useful for <strong>discarding attributes</strong> that do
+                  not carry additional information. Here <span class="tex">\bx</span> and
+                  <span class="tex">\by</span> are two distinct attributes and their elements the
+                  values of the two attributes in the different objects of the data set.
+                </li>
+              </ul>
+            </div>
+            <div class="table-wrap ds-reveal">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>x</th>
+                    <th>y</th>
+                    <th class="num">Corr(x, y)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>(−3, 6, 0, 3, −6)</td>
+                    <td>(1, −2, 0, −1, 2)</td>
+                    <td class="num">−1</td>
+                  </tr>
+                  <tr>
+                    <td>(3, 6, 0, 3, 6)</td>
+                    <td>(1, 2, 0, 1, 2)</td>
+                    <td class="num">1</td>
+                  </tr>
+                  <tr>
+                    <td>(−3, −2, −1, 0, 1, 2, 3)</td>
+                    <td>(9, 4, 1, 0, 1, 4, 9)</td>
+                    <td class="num">0, yet <span class="tex">y_k = x_k^2</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Play</span>
+                <h3 class="lab__title">Correlation sandbox: tap to add, drag to move</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div id="sandbox"></div>
+                  <div id="sandbox-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="sandbox-controls"></div>
+              </div>
+            </div>
+
+            <h3 class="ds-reveal">Scatter plots</h3>
+            <div class="prose ds-reveal">
+              <ul>
+                <li>
+                  Let you determine whether some of the attributes are related. Useful for reducing
+                  the number of attributes to be considered in a distance/similarity function.
+                </li>
+                <li>
+                  When labels are available, they allow you to determine whether you can classify
+                  objects based on the values of two attributes.
+                </li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Iris scatter matrix: can two attributes classify?</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="iris-matrix"></div></div>
+                <div class="lab__controls" id="iris-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 2.5 ============ -->
+          <section class="block" id="guess" aria-labelledby="guess-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">2.5 · Mini game</p>
+              <h2 id="guess-title">Visualizing Pearson correlation</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                Points are described by continuous attributes <span class="tex">x</span> and
+                <span class="tex">y</span>. In each chart, attribute values were generated with a
+                different level of correlation. Is <span class="tex">x</span> correlated with
+                <span class="tex">y</span>?
+              </p>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Look</span>
+                <h3 class="lab__title">From −1 to 1</h3>
+              </div>
+              <div class="lab__plot"><div id="rho-grid"></div></div>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Play</span>
+                <span class="caps muted" id="guess-score"></span>
+                <h3 class="lab__title">Guess the correlation</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="guess-chart"></div></div>
+                <div class="lab__controls" id="guess-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 2.6 ============ -->
+          <section class="block" id="spearman" aria-labelledby="spearman-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">2.6</p>
+              <h2 id="spearman-title">Spearman correlation</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                Spearman correlation measures the strength and direction of a
+                <strong>monotonic</strong> relationship between two attributes: when
+                <span class="tex">x</span> increases, <span class="tex">y</span> always increases
+                (or always decreases), not necessarily linearly. It is the Pearson correlation
+                computed on the <strong>ranks</strong> of the values instead of on the values
+                themselves.
+              </p>
+            </div>
+            <div class="formula ds-reveal">
+              <span class="formula__name">Spearman correlation</span>
+              <div class="tex tex--block">\rho_s(\bx, \by) = Corr(rank(\bx), rank(\by))</div>
+            </div>
+            <div class="prose ds-reveal">
+              <p>
+                The <strong>rank</strong> of a value is its position in the list of the values
+                sorted in ascending order (1 = smallest); tied values get the average of the
+                positions they occupy:
+                <span class="tex"
+                  >x = (10, 30, 20, 20, 50) \rightarrow rank(x) = (1, 4, 2.5, 2.5, 5)</span
+                >.
+              </p>
+            </div>
+            <div class="formula ds-reveal">
+              <span class="formula__name">Without ties</span>
+              <div class="tex tex--block">
+                \rho_s(\bx, \by) = 1 - \frac{6\sum_{k=1}^{n} d_k^2}{n(n^2 - 1)} \qquad d_k =
+                rank(x_k) - rank(y_k)
+              </div>
+              <p class="formula__note">
+                The second formula holds when there are no ties.
+                <span class="tex">\rho_s</span> varies in <span class="tex">[-1, 1]</span>: 1 (−1)
+                means that <span class="tex">y</span> is a monotonically increasing (decreasing)
+                function of <span class="tex">x</span>.
+              </p>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Rank anything</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="rank-viz"></div></div>
+                <div class="lab__controls" id="rank-controls"></div>
+              </div>
+            </div>
+
+            <h3 class="ds-reveal">A worked example</h3>
+            <div class="prose ds-reveal">
+              <p>
+                Study hours and exam grade of 6 students: the grade grows with the hours, with one
+                exception (students S3 and S4). Edit any value: ranks, <span class="tex">d</span>
+                and both coefficients update.
+              </p>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Edit</span>
+                <h3 class="lab__title">Hours vs grade</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div class="table-wrap" style="margin: 0">
+                    <table class="data-table" id="worked"></table>
+                  </div>
+                  <div id="worked-chart" style="margin-top: 0.75rem"></div>
+                </div>
+                <div class="lab__controls" id="worked-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 2.7 ============ -->
+          <section class="block" id="versus" aria-labelledby="versus-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">2.7</p>
+              <h2 id="versus-title">Spearman vs Pearson</h2>
+            </header>
+            <div class="split ds-reveal">
+              <div class="card card--accent">
+                <h4>Spearman is preferable when</h4>
+                <ul>
+                  <li>
+                    The relationship is monotonic but not linear (exponential, logarithmic,
+                    saturation effects).
+                  </li>
+                  <li>
+                    The data contain outliers: with ranks, the largest value always weighs
+                    <span class="tex">n</span>, whatever its magnitude.
+                  </li>
+                  <li>Distributions are strongly skewed (e.g., income, prices).</li>
+                  <li>
+                    Attributes are ordinal (grades, satisfaction levels, rankings): only the order
+                    is meaningful, while Pearson requires meaningful differences, i.e., interval or
+                    ratio attributes.
+                  </li>
+                </ul>
+              </div>
+              <div class="card">
+                <h4>Pearson is preferable when</h4>
+                <ul>
+                  <li>
+                    We are interested in linear relationships, e.g., to verify whether an attribute
+                    can be expressed as <span class="tex">x = a\,y + b</span> and then discarded.
+                  </li>
+                  <li>
+                    Attributes are numerical and free of strong outliers: Pearson exploits the
+                    actual distances between values, not only their order.
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="callout callout--note ds-reveal">
+              Neither of them captures <strong>non-monotonic</strong> relationships: for
+              <span class="tex">x = (-3, -2, -1, 0, 1, 2, 3)</span> and
+              <span class="tex">y = x^2</span> both Pearson and Spearman are 0 → see Mutual
+              Information.
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Three datasets, two coefficients</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div class="lab__plots lab__plots--3" id="versus-plots"></div>
+                </div>
+                <div class="lab__controls" id="versus-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 2.8 ============ -->
+          <section class="block" id="spurious" aria-labelledby="spurious-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">2.8</p>
+              <h2 id="spurious-title">Spurious correlation</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                Two attributes appear related (high correlation) but there is
+                <strong>no direct cause–effect link</strong> between them.
+              </p>
+              <ul>
+                <li>
+                  The association is really present in the data, but it is generated by something
+                  else: a hidden third factor, a common trend, chance, or the way data were
+                  collected.
+                </li>
+                <li>
+                  <strong>Correlation does not imply causation</strong>: a model can exploit a
+                  spurious correlation to predict, but it fails as soon as the hidden factor
+                  changes, and decisions based on it are wrong.
+                </li>
+              </ul>
+              <h4>Typical sources</h4>
+              <ul>
+                <li>
+                  <strong>Confounding variable</strong>: a common cause
+                  <span class="tex">z</span> drives both <span class="tex">x</span> and
+                  <span class="tex">y</span>.
+                </li>
+                <li>
+                  <strong>Common trend</strong>: two time series that both grow (or decrease) over
+                  time, e.g., number of smartphones sold and average life expectancy.
+                </li>
+                <li>
+                  <strong>Chance</strong>: with many attributes some pairs are correlated just by
+                  chance (100 attributes → 4,950 pairs to test).
+                </li>
+                <li>
+                  <strong>Selection bias and aggregation</strong>: data collected on a
+                  non-representative subset, or groups with different behavior merged together.
+                </li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Chance: how many pairs are “significant” by luck?</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div id="chance-chart"></div>
+                  <div id="chance-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="chance-controls"></div>
+              </div>
+            </div>
+
+            <h3 class="ds-reveal">Formal definition</h3>
+            <div class="prose ds-reveal">
+              <p>
+                <span class="tex">\bx</span> and <span class="tex">\by</span> are
+                <strong>spuriously correlated</strong> with respect to a variable
+                <span class="tex">\bz</span> (confounder) when
+              </p>
+            </div>
+            <div class="formula ds-reveal">
+              <div class="tex tex--block">
+                \rho(\bx, \by) \neq 0 \quad \text{but} \quad \rho(\bx, \by \mid \bz) \approx 0
+              </div>
+              <span class="formula__name" style="margin-top: 0.75rem">Partial correlation</span>
+              <div class="tex tex--block">
+                \rho(\bx, \by \mid \bz) = \frac{\rho_{xy} - \rho_{xz}\,\rho_{yz}}{\sqrt{(1 -
+                \rho_{xz}^2)(1 - \rho_{yz}^2)}}
+              </div>
+              <ul class="formula__note" style="padding-left: 1.1rem; margin: 0.5rem 0 0">
+                <li>
+                  <span class="tex">\rho(\bx, \by \mid \bz)</span> is the partial correlation: the
+                  correlation between <span class="tex">x</span> and <span class="tex">y</span> once
+                  the linear effect of <span class="tex">z</span> has been removed from both, i.e.,
+                  the correlation between the residuals of <span class="tex">x</span> and
+                  <span class="tex">y</span> regressed on <span class="tex">z</span>.
+                </li>
+                <li>
+                  <span class="tex">x</span> and <span class="tex">y</span> are conditionally
+                  independent given <span class="tex">z</span>: once <span class="tex">z</span> is
+                  known, <span class="tex">x</span> carries no further information on
+                  <span class="tex">y</span>.
+                </li>
+              </ul>
+              <div class="dag" id="dag"></div>
+            </div>
+
+            <h3 class="ds-reveal">An example: ice creams and drownings</h3>
+            <div class="prose ds-reveal">
+              <ul>
+                <li>
+                  Weekly ice-cream sales and drownings over 3 years (synthetic data) are strongly
+                  correlated.
+                </li>
+                <li>
+                  Temperature is the confounder: in hot weeks people buy more ice creams and more
+                  people go swimming, hence more drownings.
+                </li>
+                <li>
+                  Within temperature bands, or after removing the effect of temperature, the
+                  correlation (almost) vanishes: banning ice cream would not save anyone. In the
+                  course data:
+                  <span class="tex">\rho_{xy} = 0.80,\ \rho_{xz} = 0.97,\ \rho_{yz} = 0.82</span>,
+                  so
+                  <span class="tex"
+                    >\rho(x,y|z) = \frac{0.80 - 0.97\cdot0.82}{\sqrt{(1 - 0.97^2)(1 - 0.82^2)}}
+                    \approx 0.03</span
+                  >.
+                </li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Raw, sliced, residuals</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div class="lab__plots lab__plots--3" id="ice-plots"></div>
+                  <div id="ice-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="ice-controls"></div>
+              </div>
+            </div>
+
+            <h3 class="ds-reveal">Detecting spurious correlation</h3>
+            <div class="prose ds-reveal">
+              <ul>
+                <li>
+                  <strong>Domain knowledge</strong>: is there a plausible mechanism linking
+                  <span class="tex">x</span> and <span class="tex">y</span>? Verify the hypothesis
+                  with the domain experts (see Business Understanding).
+                </li>
+                <li>
+                  <strong>Look for confounders</strong>: list candidate common causes (time, season,
+                  location, size of the object, …) and control for them.
+                  <ul>
+                    <li>
+                      Dataset slicing / stratification: compute the correlation within groups where
+                      <span class="tex">z</span> is (almost) constant; if it vanishes, the
+                      correlation is spurious.
+                    </li>
+                    <li>
+                      Partial correlation: regress <span class="tex">x</span> and
+                      <span class="tex">y</span> on <span class="tex">z</span> and correlate the
+                      residuals.
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Time series</strong>: remove trends and seasonality (e.g., by
+                  differencing) before computing the correlation.
+                </li>
+                <li>
+                  <strong>Chance</strong>: with many attributes, check the statistical significance
+                  of the correlation (correcting for multiple comparisons) and confirm it on new
+                  data.
+                </li>
+              </ul>
+            </div>
+            <div class="callout ds-reveal">
+              <span class="callout__title">Correlation is a hint, not a proof</span>
+              These checks can reveal that a correlation is spurious, but only controlled
+              experiments (randomization, A/B tests) can establish a causal relationship.
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Common trend: smartphones and life expectancy</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="trend-chart"></div></div>
+                <div class="lab__controls" id="trend-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 2.9 ============ -->
+          <section class="block" id="mi" aria-labelledby="mi-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">2.9</p>
+              <h2 id="mi-title">Mutual information</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p class="lead">How much knowing one variable helps us predict the other.</p>
+              <p>
+                For two discrete random variables <span class="tex">\bx</span> and
+                <span class="tex">\by</span>, with joint probability function
+                <span class="tex">p(x,y)</span> and marginal probability functions
+                <span class="tex">p(x)</span> and <span class="tex">p(y)</span>, the mutual
+                information is defined as:
+              </p>
+            </div>
+            <div class="formula ds-reveal">
+              <span class="formula__name">Mutual information</span>
+              <div class="tex tex--block">
+                MI(\bx, \by) = \sum_{x \in \bx}\sum_{y \in \by} p(x, y)\,\log\frac{p(x,
+                y)}{p(x)\cdot p(y)}
+              </div>
+              <ul class="formula__note" style="padding-left: 1.1rem; margin: 0.5rem 0 0">
+                <li><span class="tex">MI(\bx, \by) \geq 0</span></li>
+                <li>
+                  <span class="tex">MI(\bx, \by) = 0</span> iff <span class="tex">x</span> and
+                  <span class="tex">y</span> are independent (i.e., knowing the value of
+                  <span class="tex">x</span> does not provide any information about the
+                  <span class="tex">y</span> value)
+                </li>
+                <li><span class="tex">MI(\bx, \by) = MI(\by, \bx)</span> symmetry</li>
+              </ul>
+            </div>
+            <div class="prose ds-reveal">
+              <ul>
+                <li>
+                  Mutual information captures <strong>all the types of correlation</strong> (not
+                  only the linear one).
+                </li>
+                <li>
+                  The definition for continuous variables is technically different, but the concepts
+                  are the same.
+                </li>
+              </ul>
+            </div>
+            <div class="split split--3 ds-reveal">
+              <div class="card">
+                <h4>Joint probability p(x, y)</h4>
+                <ul>
+                  <li>Acts as a weight in the sum.</li>
+                  <li>Events that are more likely (higher p(x, y)) contribute more to MI.</li>
+                  <li>Rare events (small p(x, y)) contribute less.</li>
+                  <li>Intuition: “focus on what actually happens often.”</li>
+                </ul>
+              </div>
+              <div class="card">
+                <h4>Product of marginals p(x)·p(y)</h4>
+                <ul>
+                  <li>Represents what would happen if x and y were independent.</li>
+                  <li>
+                    If x and y are independent, p(x, y) = p(x)·p(y), and the log term becomes 0.
+                  </li>
+                  <li>
+                    Intuition: this is your baseline expectation for each combination; deviation
+                    from it is information.
+                  </li>
+                </ul>
+              </div>
+              <div class="card card--accent">
+                <h4>Comparing p(x)·p(y) to p(x, y)</h4>
+                <ul>
+                  <li>
+                    If p(x, y) &gt; p(x)·p(y): the pair occurs more often than expected under
+                    independence; seeing x increases the likelihood of y (or vice versa).
+                  </li>
+                  <li>
+                    If p(x, y) &lt; p(x)·p(y): the pair occurs less often than expected; seeing x
+                    makes y less likely than random chance.
+                  </li>
+                  <li>
+                    Both cases indicate statistical dependence: the probability of one variable
+                    depends on the value of the other.
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="callout callout--note ds-reveal">
+              <span class="callout__title">Why the log?</span>
+              The log in mutual information does more than just “make MI zero when independent”
+              (<span class="tex">p(x,y) = p(x)p(y) \Rightarrow \log 1 = 0</span>). It transforms the
+              multiplicative ratio into additive information. A ratio of 2 means twice as likely; a
+              ratio of 0.5 means half as likely. The ratio is a factor of change, not an amount of
+              information: averaging 2 and 0.5 does not return 1, while their base-2 logarithms, +1
+              and −1, express them as equal-sized contributions in opposite directions.
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Rain and umbrellas</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div id="rain-chart"></div>
+                  <div id="rain-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="rain-controls"></div>
+              </div>
+              <div class="lab__foot">
+                Suppose x = whether it's raining, y = whether people carry umbrellas, with p(x =
+                Yes) = 0.3 and p(y = Yes) = 0.2. If independent, p(x = Yes, y = Yes) = 0.3 · 0.2 =
+                0.06. In reality p(x = Yes, y = Yes) = 0.15 &gt; 0.06: seeing rain makes carrying an
+                umbrella more likely → dependency → positive MI contribution.
+              </div>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Pearson vs Spearman vs MI on any shape</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div id="shape-chart"></div>
+                  <div id="shape-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="shape-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 2.10 ============ -->
+          <section class="block" id="titanic" aria-labelledby="titanic-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">2.10 · Boss level</p>
+              <h2 id="titanic-title">The Titanic dataset</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                The sinking of the Titanic is one of the most infamous shipwrecks in history. On
+                April 15, 1912, during her maiden voyage, the widely considered “unsinkable” RMS
+                Titanic sank after colliding with an iceberg. Unfortunately, there weren't enough
+                lifeboats for everyone on board, resulting in the death of 1502 out of 2224
+                passengers and crew. While there was some element of luck involved in surviving, it
+                seems some groups of people were more likely to survive than others.
+              </p>
+              <p>Which attribute tells you most about who survived?</p>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Investigate</span>
+                <h3 class="lab__title">Survival by attribute</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div class="lab__plots lab__plots--2">
+                    <div>
+                      <p class="plot-title">Survival rate <small>by group</small></p>
+                      <div id="tit-rate"></div>
+                    </div>
+                    <div>
+                      <p class="plot-title">MI with Survived <small>bits, all attributes</small></p>
+                      <div id="tit-mi"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="lab__controls" id="tit-controls"></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <nav class="pager" aria-label="Chapters">
+        <div class="pager__inner">
+          <a href="univariate.html"
+            ><span class="pager__dir">← Level 01</span
+            ><span class="pager__name">Univariate analysis</span></a
+          >
+          <a class="pager__next" href="multivariate.html"
+            ><span class="pager__dir">Level 03 →</span
+            ><span class="pager__name">Multivariate analysis</span></a
+          >
+        </div>
+      </nav>
+    </main>
+
+    <footer class="site-footer">
+      <div class="ds-footer">
+        <a class="ds-credit" href="https://lucabonaldo.dev" target="_blank" rel="noopener"
+          >Made by <b>Luca Bonaldo</b></a
+        >
+        <p><a href="about.html">About &amp; credits</a></p>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/pages/bivariate.js"></script>
+  </body>
+</html>

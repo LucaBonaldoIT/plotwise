@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plotwise — Learn to read a dataset</title>
+    <meta
+      name="description"
+      content="An interactive journey through data understanding: attribute types, univariate, bivariate and multivariate analysis, with real datasets you can explore."
+    />
+    <meta name="theme-color" content="#f5f2ea" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="page-intro">
+    <a class="ds-skip-link" href="#main">Skip to content</a>
+
+    <header class="ds-header">
+      <div class="ds-header__inner">
+        <a class="ds-wordmark" href="./" aria-label="Plotwise — home">
+          <span class="ds-wordmark__full">Plotwise</span
+          ><span class="ds-wordmark__mark" aria-hidden="true">pw</span
+          ><span class="ds-wordmark__dot" aria-hidden="true">.</span>
+        </a>
+        <nav class="ds-nav site-nav" aria-label="Chapters">
+          <a href="./" aria-current="page" data-home>Intro</a>
+          <a href="univariate.html"
+            ><span class="site-nav__long">Univariate</span
+            ><span class="site-nav__short">Uni</span></a
+          >
+          <a href="bivariate.html"
+            ><span class="site-nav__long">Bivariate</span><span class="site-nav__short">Bi</span></a
+          >
+          <a href="multivariate.html"
+            ><span class="site-nav__long">Multivariate</span
+            ><span class="site-nav__short">Multi</span></a
+          >
+          <a href="about.html">About</a>
+          <button
+            class="ds-theme-toggle"
+            type="button"
+            aria-label="Dark theme"
+            aria-pressed="false"
+          ></button>
+        </nav>
+      </div>
+    </header>
+    <div class="progress" aria-hidden="true"><div class="progress__bar"></div></div>
+
+    <main id="main">
+      <!-- ============ Title screen + scrollytelling ============ -->
+      <section class="void" aria-label="Introduction">
+        <div class="void__stage" aria-hidden="true">
+          <div class="void__canvas" id="void-canvas"></div>
+          <div class="void__hud void__hud--tl">
+            <span class="void__blink"></span> signal <span id="hud-signal">0</span> pts
+          </div>
+          <div class="void__hud void__hud--tr">phase <span id="hud-phase">I / IV</span></div>
+          <div class="void__hud void__hud--bl" id="hud-coords">x 0.000 · y 0.000 · z 0.000</div>
+        </div>
+
+        <div class="void__steps">
+          <div class="void__step void__step--title">
+            <div class="void__intro">
+              <p class="void__overline">A data understanding game</p>
+              <h1 class="void__title">
+                Every dataset<br />keeps a secret<span class="ds-accent">.</span>
+              </h1>
+              <p class="void__lede">
+                Thousands of points, drifting without meaning. Before any model, any prediction, any
+                AI, someone has to <em>understand</em> them.
+              </p>
+              <p class="void__scroll"><span>Scroll to decode</span><i aria-hidden="true"></i></p>
+            </div>
+          </div>
+
+          <div class="void__step">
+            <p class="void__tag">Phase I · Noise</p>
+            <p class="void__text">
+              At first, data is just noise: values without context, numbers without names.
+            </p>
+          </div>
+
+          <div class="void__step">
+            <p class="void__tag">Phase II · Structure</p>
+            <p class="void__text">
+              Look closer. Each point is an <strong>object</strong>: a customer, a passenger, a
+              flower. Each object is described by a set of <strong>attributes</strong>. Rows and
+              columns: the table appears.
+            </p>
+          </div>
+
+          <div class="void__step">
+            <p class="void__tag">Phase III · Pattern</p>
+            <p class="void__text">
+              Place the objects in the space of their attributes and they start to
+              <strong>cluster</strong>. 150 iris flowers, three species, measured in centimetres.
+              Drag to look around.
+            </p>
+          </div>
+
+          <div class="void__step">
+            <p class="void__tag">Phase IV · Understanding</p>
+            <p class="void__text">
+              One variable, then two, then many. That is the path you are about to walk. The type of
+              data determines the methods, <em>but data quality determines performance</em>.
+            </p>
+            <a class="ds-button ds-button--primary void__cta" href="#begin">Begin the journey ↓</a>
+          </div>
+        </div>
+      </section>
+
+      <div class="lesson" id="begin">
+        <nav class="toc" aria-label="On this page">
+          <p class="toc__title">Prologue</p>
+          <ol class="toc__list">
+            <li>
+              <a href="#understanding"><span class="toc__num">0.1</span>Understanding</a>
+            </li>
+            <li>
+              <a href="#types-of-data"><span class="toc__num">0.2</span>Types of data</a>
+            </li>
+            <li>
+              <a href="#structured"><span class="toc__num">0.3</span>Structured data</a>
+            </li>
+            <li>
+              <a href="#attribute-types"><span class="toc__num">0.4</span>Attribute types</a>
+            </li>
+            <li>
+              <a href="#sort-game"><span class="toc__num">0.5</span>Sorting game</a>
+            </li>
+            <li>
+              <a href="#alternative"><span class="toc__num">0.6</span>Other classifications</a>
+            </li>
+            <li>
+              <a href="#asymmetric"><span class="toc__num">0.7</span>Asymmetric attributes</a>
+            </li>
+            <li>
+              <a href="#records"><span class="toc__num">0.8</span>Beyond the table</a>
+            </li>
+            <li>
+              <a href="#datasets"><span class="toc__num">0.9</span>The datasets</a>
+            </li>
+            <li>
+              <a href="#levels"><span class="toc__num">→</span>Choose a level</a>
+            </li>
+          </ol>
+        </nav>
+
+        <div class="lesson__main">
+          <!-- ============ 0.1 Understanding ============ -->
+          <section class="block" id="understanding" aria-labelledby="understanding-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">0.1 · Prologue</p>
+              <h2 id="understanding-title">Business &amp; data understanding</h2>
+            </header>
+            <div class="split ds-reveal">
+              <div class="card">
+                <h4>Business understanding</h4>
+                <p>
+                  Gain an in-depth knowledge about the <strong>domain</strong> and the business
+                  problem or opportunity.
+                </p>
+                <ul>
+                  <li>Involves interviews with the domain experts.</li>
+                  <li>
+                    Requires the ability to quickly adapt to the context and the domain-specific
+                    vocabulary.
+                  </li>
+                  <li>
+                    The most effective approach to carry out interviews is to
+                    <strong>verify the claims</strong> made by domain experts against the data.
+                  </li>
+                </ul>
+              </div>
+              <div class="card card--accent">
+                <h4>Data understanding</h4>
+                <p>Gain an in-depth knowledge about the <strong>data</strong>:</p>
+                <ul>
+                  <li>Assessing the available data.</li>
+                  <li>Assessing data quality.</li>
+                  <li>
+                    Carrying out a manual analysis to get initial answers or to form hypotheses
+                    about the problem.
+                  </li>
+                  <li>
+                    Verifying the claims made by the domain experts and developing further questions
+                    to ask them.
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <blockquote class="callout callout--quote ds-reveal">
+              The type of data determines the methods, but data quality determines performance.
+            </blockquote>
+          </section>
+
+          <!-- ============ 0.2 Types of data ============ -->
+          <section class="block" id="types-of-data" aria-labelledby="types-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">0.2</p>
+              <h2 id="types-title">Types of data</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                Different types of data imply different expressiveness and different techniques to
+                be adopted to analyze them. Hover or tap a type.
+              </p>
+            </div>
+            <ul class="dtypes ds-reveal" id="dtypes"></ul>
+          </section>
+
+          <!-- ============ 0.3 Structured data ============ -->
+          <section class="block" id="structured" aria-labelledby="structured-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">0.3</p>
+              <h2 id="structured-title">Structured data</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                Structured data are composed of collections of
+                <span class="term">objects</span> described by a set of
+                <span class="term">attributes</span>.
+              </p>
+              <ul>
+                <li>
+                  Synonyms for <em>object</em>: record, point, case, example, entity, instance,
+                  element.
+                </li>
+                <li>
+                  An <em>attribute</em> is a property or characteristic of an object. Synonyms:
+                  variable, field, characteristic.
+                </li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <span class="caps muted" id="struct-status">Hover a row or a column</span>
+                <h3 class="lab__title">Objects are rows, attributes are columns</h3>
+              </div>
+              <div class="table-wrap" style="margin: 0; border: 0; border-radius: 0">
+                <table class="data-table" id="struct-table"></table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 0.4 Attribute types ============ -->
+          <section class="block" id="attribute-types" aria-labelledby="attr-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">0.4</p>
+              <h2 id="attr-title">Attribute types</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p class="lead">
+                An employee is described by an ID and an age, but it makes no sense to calculate the
+                average employee ID!
+              </p>
+              <p>
+                In order to perform meaningful analysis the characteristics of the attributes must
+                be known. The attribute type tells us what properties of the attribute are reflected
+                in the value we use as a measure. A simple way to characterize them is based on the
+                type of <strong>operator</strong> it makes sense to apply to the values it takes:
+              </p>
+              <ul>
+                <li><strong>Diversity</strong> <span class="tex">=,\ \neq</span></li>
+                <li>
+                  <strong>Ordering</strong> <span class="tex">&lt;,\ \leq,\ &gt;,\ \geq</span>
+                </li>
+                <li><strong>Additivity</strong> <span class="tex">+,\ -</span></li>
+                <li><strong>Multiplicativeness</strong> <span class="tex">*,\ /</span></li>
+              </ul>
+              <p>
+                This determines 4 types of attributes: <strong>nominal</strong>,
+                <strong>ordinal</strong>, <strong>interval</strong> and <strong>ratio</strong>. Each
+                level inherits the operators of the previous one.
+              </p>
+            </div>
+
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Pick a type: which operators unlock?</h3>
+              </div>
+              <div class="ladder" id="ladder"></div>
+            </div>
+
+            <div class="table-wrap ds-reveal">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                    <th>Statistical operator</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td rowspan="2"><strong>Categorical</strong><br />(qualitative)</td>
+                    <td><span class="type-chip type-chip--nominal">Nominal</span></td>
+                    <td class="wrap">
+                      Different names of values. We can only distinguish one from the others.
+                    </td>
+                    <td class="wrap">Gender, eye color, zip code, ID</td>
+                    <td class="wrap-free">Mode, correlation</td>
+                  </tr>
+                  <tr>
+                    <td><span class="type-chip type-chip--ordinal">Ordinal</span></td>
+                    <td class="wrap">
+                      Values enable us to sort objects based on the value of the attribute, but the
+                      distance between consecutive values is not measurable or necessarily equal.
+                    </td>
+                    <td class="wrap">Grade, hardness of a mineral</td>
+                    <td class="wrap-free">Median, percentile</td>
+                  </tr>
+                  <tr>
+                    <td rowspan="2"><strong>Numerical</strong><br />(quantitative)</td>
+                    <td><span class="type-chip type-chip--interval">Interval</span></td>
+                    <td class="wrap">
+                      The difference between the values has a meaning, i.e., there is a unit of
+                      measurement (and equal numerical intervals).
+                    </td>
+                    <td class="wrap">Dates, temperature in Celsius and Fahrenheit</td>
+                    <td class="wrap-free">Mean, variance</td>
+                  </tr>
+                  <tr>
+                    <td><span class="type-chip type-chip--ratio">Ratio</span></td>
+                    <td class="wrap">The ratio of values has meaning.</td>
+                    <td class="wrap">
+                      Age, mass, length, amount of money, temperature expressed in Kelvin
+                    </td>
+                    <td class="wrap-free">Geometric mean, harmonic mean</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="ds-reveal">Interval or ratio? Where is zero</h3>
+            <div class="prose ds-reveal">
+              <p>
+                <strong>Temperature in Celsius</strong> (−10 °C → 0 °C → 10 °C → 20 °C → 30 °C): the
+                difference makes sense (30 °C − 10 °C = 20 °C), but the ratio doesn't: 20 °C is not
+                “the double” of 10 °C, because 0 °C doesn't mean “absence of heat”. How would you
+                describe −10 °C with respect to 20 °C in terms of ratio?
+              </p>
+              <p>
+                <strong>Weight in kg</strong> (0 kg → 10 kg → 20 kg → 30 kg): the difference makes
+                sense (30 kg − 10 kg = 20 kg) and the ratio makes sense too: 20 kg is twice 10 kg,
+                since 0 kg means no weight.
+              </p>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Is 20 °C twice as hot as 10 °C?</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot lab__plot--center"><div id="thermo"></div></div>
+                <div class="lab__controls" id="thermo-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 0.5 Sorting game ============ -->
+          <section class="block" id="sort-game" aria-labelledby="game-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">0.5 · Mini game</p>
+              <h2 id="game-title">Sort the attributes</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                An attribute appears: decide its type. Three lives, one point per right answer. The
+                explanation shows up after each guess.
+              </p>
+            </div>
+            <div class="game ds-reveal" id="game"></div>
+          </section>
+
+          <!-- ============ 0.6 Alternative classifications ============ -->
+          <section class="block" id="alternative" aria-labelledby="alt-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">0.6</p>
+              <h2 id="alt-title">Alternative classifications</h2>
+            </header>
+            <div class="split ds-reveal">
+              <div class="card">
+                <h4>Binary, discrete and continuous</h4>
+                <ul>
+                  <li>
+                    A <strong>discrete</strong> attribute has a finite number or an infinite
+                    countable set of values, normally represented by integers or labels.
+                  </li>
+                  <li>A <strong>continuous</strong> attribute takes real values.</li>
+                  <li>
+                    Nominal and ordinal attributes are typically discrete or binary, while interval
+                    and ratio attributes are continuous.
+                  </li>
+                </ul>
+              </div>
+              <div class="card card--accent">
+                <h4>Countably infinite</h4>
+                <p>
+                  An infinite set is said to be <strong>countably infinite</strong> if its elements
+                  can be enumerated by the natural numbers; equivalently, there exists a bijective
+                  mapping between the set and <span class="tex">\mathbb{N}</span>. Examples:
+                </p>
+                <ul>
+                  <li>Positive integers, integers</li>
+                  <li>Even / odd numbers</li>
+                  <li>The Cartesian product of two countably infinite sets</li>
+                  <li>Rational numbers</li>
+                  <li>All finite strings over a finite alphabet</li>
+                </ul>
+              </div>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Enumerating the integers with ℕ</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="countable"></div></div>
+                <div class="lab__controls" id="countable-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 0.7 Asymmetric ============ -->
+          <section class="block" id="asymmetric" aria-labelledby="asym-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">0.7</p>
+              <h2 id="asym-title">Asymmetric attributes</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                For <span class="term">asymmetric attributes</span> only the presence of a value
+                (non-zero) is relevant; sharing a 0 (a common absence) does not make two objects
+                similar.
+              </p>
+              <ul>
+                <li>
+                  <strong>Study plan</strong>: a binary vector with one attribute for each exam
+                  offered by the University (1 = chosen, 0 = not chosen).
+                </li>
+                <li>
+                  The University offers <span class="tex">m = 1{,}000</span> exams while each
+                  student chooses about 20 of them: more than 98% of the values are 0. Compared on
+                  all attribute values, every student would look very similar.
+                </li>
+                <li>
+                  The similarity between study plans must be based on the common exams only.
+                  <span class="tex">f_{ab}</span> = number of exams with value
+                  <span class="tex">a</span> in the first plan and <span class="tex">b</span> in the
+                  second one.
+                </li>
+              </ul>
+            </div>
+            <div class="formula-row ds-reveal">
+              <div class="formula">
+                <span class="formula__name">Simple Matching Coefficient</span>
+                <div class="tex tex--block">
+                  SMC = \frac{f_{11} + f_{00}}{f_{11} + f_{10} + f_{01} + f_{00}}
+                </div>
+                <p class="formula__note">Counts both 1–1 and 0–0 matches.</p>
+              </div>
+              <div class="formula">
+                <span class="formula__name">Jaccard coefficient</span>
+                <div class="tex tex--block">J = \frac{f_{11}}{f_{11} + f_{10} + f_{01}}</div>
+                <p class="formula__note">Ignores 0–0 matches.</p>
+              </div>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Anna and Marco: almost identical, or very different?</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div id="bits"></div>
+                  <div id="bits-readout" style="padding: 1rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="bits-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 0.8 Records ============ -->
+          <section class="block" id="records" aria-labelledby="records-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">0.8</p>
+              <h2 id="records-title">Beyond the plain table</h2>
+            </header>
+
+            <h3 class="ds-reveal">Documents &amp; texts</h3>
+            <div class="prose ds-reveal">
+              <p>
+                Documents are the objects of the analysis; they are described by a vector of terms.
+                Each term is an attribute of the document, and its value is the number of times the
+                term appears in the document.
+              </p>
+            </div>
+            <div class="table-wrap ds-reveal">
+              <table class="data-table data-table--hover" id="doc-table"></table>
+            </div>
+
+            <h3 class="ds-reveal">Transactions</h3>
+            <div class="prose ds-reveal">
+              <p>A record where:</p>
+              <ul>
+                <li>each record (transaction) involves multiple items;</li>
+                <li>items come from a finite set;</li>
+                <li>
+                  for example, in a supermarket, the set of products purchased by a customer during
+                  a visit constitutes a transaction, while the set of items is the set of all the
+                  products sold by the supermarket;
+                </li>
+                <li>the number of items may vary from transaction to transaction.</li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Pick an item: which baskets contain it?</h3>
+              </div>
+              <div id="tx"></div>
+            </div>
+
+            <h3 class="ds-reveal">Ordered data and time series</h3>
+            <div class="prose ds-reveal">
+              <p>
+                Both involve an order, but there's a fundamental difference related to the meaning
+                of the order and time.
+              </p>
+            </div>
+            <div class="split ds-reveal">
+              <div class="card">
+                <h4>Ordered data</h4>
+                <p>
+                  Data organized according to a specific order, but the order does not necessarily
+                  represent time. You can compare positions or rank data, but there is no implied
+                  time interval.
+                </p>
+                <ul>
+                  <li>Student rankings by score (1st, 2nd, 3rd)</li>
+                  <li>Clothing sizes (S, M, L, XL)</li>
+                  <li>Satisfaction levels (1–5 stars)</li>
+                </ul>
+              </div>
+              <div class="card card--accent">
+                <h4>Time series data</h4>
+                <p>
+                  Data collected in temporal sequence, where each value has a precise timestamp,
+                  often with regular or variable frequency. Time is intrinsic; patterns, trends and
+                  correlations depend on the temporal sequence.
+                </p>
+                <ul>
+                  <li>Daily temperature</li>
+                  <li>Stock prices minute by minute</li>
+                  <li>Hourly energy consumption</li>
+                </ul>
+              </div>
+            </div>
+            <div class="callout ds-reveal">
+              <span class="callout__title">Ordinal data are the standard in…</span>
+              <ol>
+                <li>
+                  <strong>Market research and user experience.</strong> In surveys like “rank your
+                  preferences”, users are asked to order products, services or features from most to
+                  least important.
+                </li>
+                <li>
+                  <strong>Psychology and cognitive sciences.</strong> Preference tests or cognitive
+                  games in which participants must rank stimuli (images, words, scenarios) according
+                  to liking, emotional response or perceived difficulty. The ranking becomes
+                  research data to understand perceptions and mental patterns.
+                </li>
+                <li>
+                  <strong>Medicine and health.</strong> In some clinical studies, patients rank
+                  symptoms or side effects by severity or impact on quality of life. The ranking
+                  helps researchers assess subjective priorities without requiring precise numerical
+                  scales.
+                </li>
+                <li>
+                  <strong>Recommendation systems.</strong> In Netflix, Spotify or Amazon, users can
+                  rank or prioritize movies, songs or products they prefer. The algorithm uses this
+                  information to personalize suggestions, even without explicit numerical ratings.
+                </li>
+              </ol>
+              <p style="margin-top: 0.75rem">
+                Ordering becomes an indirect method of data collection, because it allows subjective
+                perceptions, preferences or relative priorities to be transformed into structured
+                information without requiring absolute numbers.
+              </p>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Same values, two kinds of order</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="order-ts"></div></div>
+                <div class="lab__controls" id="order-ts-controls"></div>
+              </div>
+            </div>
+
+            <h3 class="ds-reveal">Spatio-temporal data</h3>
+            <div class="prose ds-reveal">
+              <p>
+                In spatio-temporal data, values are related to the “neighbors” data both in
+                <strong>space</strong> and in <strong>time</strong>: a cell resembles the cells
+                around it, and itself one month earlier.
+              </p>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Surface temperature through the year (synthetic)</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="spatio"></div></div>
+                <div class="lab__controls" id="spatio-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 0.9 Datasets ============ -->
+          <section class="block" id="datasets" aria-labelledby="datasets-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">0.9 · Your inventory</p>
+              <h2 id="datasets-title">The datasets you will explore</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                Every lab in the next chapters runs on one of these. The real datasets ship with
+                this site; the synthetic ones are generated in your browser with a fixed seed.
+              </p>
+            </div>
+            <ul class="inventory ds-reveal" id="inventory"></ul>
+
+            <h3 class="ds-reveal">Bank data</h3>
+            <div class="prose ds-reveal">
+              <p>
+                <code>bank-data.csv</code>: 600 instances, no missing data. A
+                <strong>Personal Equity Plan</strong> (PEP) was a tax-advantaged investment account
+                promoted by the United Kingdom Government to (1) encourage household saving, (2)
+                promote long-term investment, (3) support capital markets.
+              </p>
+            </div>
+            <div class="table-wrap ds-reveal">
+              <table class="data-table" id="bank-attrs"></table>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Peek</span>
+                <span class="caps muted" id="bank-peek-status"></span>
+                <h3 class="lab__title">The first rows of bank-data.csv</h3>
+              </div>
+              <div class="table-wrap" style="margin: 0; border: 0; border-radius: 0">
+                <table class="data-table data-table--hover" id="bank-peek"></table>
+              </div>
+            </div>
+
+            <h3 class="ds-reveal">The Titanic dataset</h3>
+            <div class="prose ds-reveal">
+              <p>
+                The sinking of the Titanic is one of the most infamous shipwrecks in history. On
+                April 15, 1912, during her maiden voyage, the widely considered “unsinkable” RMS
+                Titanic sank after colliding with an iceberg. Unfortunately, there weren't enough
+                lifeboats for everyone on board, resulting in the death of 1502 out of 2224
+                passengers and crew. While there was some element of luck involved in surviving, it
+                seems some groups of people were more likely to survive than others. The Kaggle
+                training set has 891 passengers.
+              </p>
+            </div>
+          </section>
+
+          <!-- ============ Levels ============ -->
+          <section class="block" id="levels" aria-labelledby="levels-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">Choose a level</p>
+              <h2 id="levels-title">Three levels, one dataset at a time</h2>
+            </header>
+            <ul class="levels">
+              <li class="ds-reveal">
+                <a class="level" href="univariate.html">
+                  <span class="level__num">01</span>
+                  <span class="level__glyph" aria-hidden="true">
+                    <svg viewBox="0 0 120 60">
+                      <rect x="6" y="40" width="12" height="16" />
+                      <rect x="22" y="26" width="12" height="30" />
+                      <rect x="38" y="10" width="12" height="46" />
+                      <rect x="54" y="18" width="12" height="38" />
+                      <rect x="70" y="32" width="12" height="24" />
+                      <rect x="86" y="44" width="12" height="12" />
+                      <rect x="102" y="50" width="12" height="6" />
+                    </svg>
+                  </span>
+                  <span class="level__name">Univariate</span>
+                  <span class="level__desc"
+                    >One variable at a time: center, spread, percentiles, skewness, kurtosis.</span
+                  >
+                  <span class="level__go">Enter level →</span>
+                </a>
+              </li>
+              <li class="ds-reveal">
+                <a class="level" href="bivariate.html">
+                  <span class="level__num">02</span>
+                  <span class="level__glyph" aria-hidden="true">
+                    <svg viewBox="0 0 120 60">
+                      <circle cx="12" cy="50" r="3" />
+                      <circle cx="24" cy="44" r="3" />
+                      <circle cx="34" cy="46" r="3" />
+                      <circle cx="44" cy="36" r="3" />
+                      <circle cx="56" cy="34" r="3" />
+                      <circle cx="66" cy="26" r="3" />
+                      <circle cx="78" cy="28" r="3" />
+                      <circle cx="88" cy="18" r="3" />
+                      <circle cx="100" cy="14" r="3" />
+                      <circle cx="110" cy="8" r="3" />
+                      <line x1="6" y1="54" x2="114" y2="6" />
+                    </svg>
+                  </span>
+                  <span class="level__name">Bivariate</span>
+                  <span class="level__desc"
+                    >Two variables: Pearson, Spearman, spurious correlation, mutual
+                    information.</span
+                  >
+                  <span class="level__go">Enter level →</span>
+                </a>
+              </li>
+              <li class="ds-reveal">
+                <a class="level" href="multivariate.html">
+                  <span class="level__num">03</span>
+                  <span class="level__glyph" aria-hidden="true">
+                    <svg viewBox="0 0 120 60">
+                      <line x1="60" y1="54" x2="60" y2="6" />
+                      <line x1="60" y1="54" x2="14" y2="38" />
+                      <line x1="60" y1="54" x2="106" y2="38" />
+                      <circle cx="40" cy="26" r="3" />
+                      <circle cx="46" cy="20" r="3" />
+                      <circle cx="36" cy="18" r="3" />
+                      <circle cx="80" cy="34" r="3" />
+                      <circle cx="86" cy="28" r="3" />
+                      <circle cx="76" cy="26" r="3" />
+                      <circle cx="62" cy="14" r="3" />
+                    </svg>
+                  </span>
+                  <span class="level__name">Multivariate</span>
+                  <span class="level__desc"
+                    >Many variables: curse of dimensionality, PCA in 3D, t-SNE, the UK diet,
+                    politics.</span
+                  >
+                  <span class="level__go">Enter level →</span>
+                </a>
+              </li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="ds-footer">
+        <a class="ds-credit" href="https://lucabonaldo.dev" target="_blank" rel="noopener"
+          >Made by <b>Luca Bonaldo</b></a
+        >
+        <p><a href="about.html">About &amp; credits</a></p>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/pages/intro.js"></script>
+  </body>
+</html>

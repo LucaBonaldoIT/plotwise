@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Multivariate analysis — Plotwise</title>
+    <meta
+      name="description"
+      content="Explore many variables at once: the curse of dimensionality, PCA in an interactive 3D scene, eigenvalues, biplots, live t-SNE, the UK diet and a spatial model of politics."
+    />
+    <meta name="theme-color" content="#f5f2ea" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body data-chapter="multivariate">
+    <a class="ds-skip-link" href="#main">Skip to content</a>
+
+    <header class="ds-header">
+      <div class="ds-header__inner">
+        <a class="ds-wordmark" href="./" aria-label="Plotwise — home">
+          <span class="ds-wordmark__full">Plotwise</span
+          ><span class="ds-wordmark__mark" aria-hidden="true">pw</span
+          ><span class="ds-wordmark__dot" aria-hidden="true">.</span>
+        </a>
+        <nav class="ds-nav site-nav" aria-label="Chapters">
+          <a href="./" data-home>Intro</a>
+          <a href="univariate.html"
+            ><span class="site-nav__long">Univariate</span
+            ><span class="site-nav__short">Uni</span></a
+          >
+          <a href="bivariate.html"
+            ><span class="site-nav__long">Bivariate</span><span class="site-nav__short">Bi</span></a
+          >
+          <a href="multivariate.html" aria-current="page"
+            ><span class="site-nav__long">Multivariate</span
+            ><span class="site-nav__short">Multi</span></a
+          >
+          <a href="about.html">About</a>
+          <button
+            class="ds-theme-toggle"
+            type="button"
+            aria-label="Dark theme"
+            aria-pressed="false"
+          ></button>
+        </nav>
+      </div>
+    </header>
+    <div class="progress" aria-hidden="true"><div class="progress__bar"></div></div>
+
+    <main id="main">
+      <section class="chapter" aria-labelledby="chapter-title">
+        <div class="chapter__art" id="art" aria-hidden="true"></div>
+        <div class="chapter__inner">
+          <div class="chapter__text">
+            <p class="chapter__level">Level 03</p>
+            <h1 class="chapter__title" id="chapter-title">
+              Multi&shy;variate<span class="ds-accent">.</span>
+            </h1>
+            <p class="chapter__lede">
+              Many variables at once. Humans cannot see beyond three dimensions, so we learn to
+              flatten the space without losing what matters: rotate it, project it, and let points
+              find their neighbours.
+            </p>
+          </div>
+          <aside class="quest" aria-label="Objectives">
+            <p class="quest__title"><span>Quest log</span><span class="quest__count"></span></p>
+            <ol></ol>
+          </aside>
+        </div>
+      </section>
+
+      <div class="lesson">
+        <nav class="toc" aria-label="On this page">
+          <p class="toc__title">Level 03</p>
+          <ol class="toc__list">
+            <li>
+              <a href="#what"><span class="toc__num">3.1</span>What it is</a>
+            </li>
+            <li>
+              <a href="#curse"><span class="toc__num">3.2</span>Curse of dimensionality</a>
+            </li>
+            <li>
+              <a href="#pca"><span class="toc__num">3.3</span>PCA in 3D</a>
+            </li>
+            <li>
+              <a href="#projection"><span class="toc__num">3.4</span>Linear projection</a>
+            </li>
+            <li>
+              <a href="#eigen"><span class="toc__num">3.5</span>Eigenvectors</a>
+            </li>
+            <li>
+              <a href="#retro"><span class="toc__num">3.6</span>Retro-projection</a>
+            </li>
+            <li>
+              <a href="#weights"><span class="toc__num">3.7</span>Weights &amp; biplot</a>
+            </li>
+            <li>
+              <a href="#pca-work"><span class="toc__num">3.8</span>PCA at work</a>
+            </li>
+            <li>
+              <a href="#tsne"><span class="toc__num">3.9</span>t-SNE</a>
+            </li>
+            <li>
+              <a href="#uk"><span class="toc__num">3.10</span>Eating in the UK</a>
+            </li>
+            <li>
+              <a href="#politics"><span class="toc__num">3.11</span>Politics</a>
+            </li>
+          </ol>
+        </nav>
+
+        <div class="lesson__main">
+          <!-- ============ 3.1 ============ -->
+          <section class="block" id="what" aria-labelledby="what-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.1</p>
+              <h2 id="what-title">Multivariate analysis</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p class="lead">Humans cannot interpret high-dimensional spaces.</p>
+              <ul>
+                <li>Hard to visualize beyond 3 dimensions.</li>
+                <li>Difficult to understand relationships.</li>
+              </ul>
+              <p>Dimensionality reduction enables 2D/3D visualization.</p>
+            </div>
+            <div class="split ds-reveal">
+              <div class="card">
+                <h4>Principal Component Analysis (PCA)</h4>
+                <ul>
+                  <li>Linear transformation</li>
+                  <li>Maximizes global variance</li>
+                  <li>Keeps overall data structure</li>
+                  <li>Distances are meaningful at a global scale</li>
+                </ul>
+              </div>
+              <div class="card card--accent">
+                <h4>t-distributed Stochastic Neighbor Embedding (t-SNE)</h4>
+                <ul>
+                  <li>Nonlinear transformation</li>
+                  <li>Preserves local neighborhoods</li>
+                  <li>Points close in high dimensions stay close in low dimensions</li>
+                  <li>Global distances are not reliable</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 3.2 ============ -->
+          <section class="block" id="curse" aria-labelledby="curse-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.2</p>
+              <h2 id="curse-title">Dimensionality reduction: beyond data understanding</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                As the number of variables grows, data becomes sparse and distances lose meaning:
+                this is known as the <span class="term">curse of dimensionality</span>.
+              </p>
+              <ul>
+                <li>Points tend to look equally distant from each other.</li>
+                <li>Neighborhood-based methods (e.g., clustering) degrade.</li>
+                <li>Models require exponentially more data.</li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Add dimensions, watch distances collapse</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div id="curse-chart"></div>
+                  <div id="curse-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="curse-controls"></div>
+              </div>
+            </div>
+            <div class="prose ds-reveal">
+              <p>
+                In real datasets, many variables are <strong>correlated or redundant</strong>.
+                Techniques like PCA transform correlated variables into
+                <strong>uncorrelated components</strong>, preserving most of the information.
+              </p>
+              <ul>
+                <li>Example: income, spending score and credit limit often overlap.</li>
+                <li>Keeping all variables adds noise without adding information.</li>
+              </ul>
+              <p>High-dimensional data can cause:</p>
+              <ul>
+                <li>Overfitting (the model learns noise).</li>
+                <li>Instability in parameter estimation.</li>
+              </ul>
+              <p>
+                Reducing dimensions restores structure and improves learning. These techniques come
+                back again during the feature engineering step.
+              </p>
+            </div>
+          </section>
+
+          <!-- ============ 3.3 ============ -->
+          <section class="block" id="pca" aria-labelledby="pca-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.3</p>
+              <h2 id="pca-title">Principal Component Analysis</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                PCA is a
+                <span class="term">linear dimensionality reduction technique</span> grounded in
+                <strong>linear algebra and statistics</strong>. Its goal is to transform a dataset
+                into a new coordinate system where the axes (principal components) capture the
+                <strong>maximum variance</strong> in decreasing order, while being
+                <strong>orthogonal</strong> (uncorrelated).
+              </p>
+              <p>PCA is based on the following assumptions:</p>
+              <ul>
+                <li>
+                  <strong>Information–variance assumption</strong>: high-variance directions contain
+                  the most relevant information. Variance measures how much the data spreads along a
+                  direction.
+                  <ul>
+                    <li>High variance → data points are well spread → rich structure</li>
+                    <li>Low variance → data points are compressed → little information</li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Linearity assumption</strong>: the relevant data structure can be captured
+                  through a global linear transformation and represented by a lower-dimensional
+                  linear subspace.
+                </li>
+              </ul>
+              <p>
+                So when PCA maximizes variance, it is effectively finding directions that preserve
+                as much information as possible.
+              </p>
+            </div>
+            <div class="lab lab--3d ds-reveal" id="pca3d-lab">
+              <div class="lab__head">
+                <span class="lab__kicker">Explore in 3D</span>
+                <span class="caps muted" id="pca3d-status"></span>
+                <h3 class="lab__title">Shape a cloud, find its principal components, flatten it</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div class="three-host" id="pca3d"></div>
+                  <div class="lab__plots lab__plots--2" style="margin-top: 0.75rem">
+                    <div>
+                      <p class="plot-title">The projected 2D points <small>y = Pᵀx</small></p>
+                      <div id="pca3d-2d"></div>
+                    </div>
+                    <div>
+                      <p class="plot-title">
+                        1D views <small>original axes vs principal components</small>
+                      </p>
+                      <div id="pca3d-strips"></div>
+                    </div>
+                  </div>
+                  <div id="pca3d-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="pca3d-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 3.4 ============ -->
+          <section class="block" id="projection" aria-labelledby="proj-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.4</p>
+              <h2 id="proj-title">Linear projection</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>Let <span class="tex">\bx</span> be a 3D point:</p>
+            </div>
+            <div class="formula ds-reveal">
+              <div class="tex tex--block">
+                \bx = \begin{bmatrix} x_1 \\ x_2 \\ x_3 \end{bmatrix}
+              </div>
+            </div>
+            <div class="prose ds-reveal">
+              <p>
+                Given two linearly independent vectors (i.e., different directions) in 3D defining
+                the projection plane:
+              </p>
+            </div>
+            <div class="formula ds-reveal">
+              <div class="tex tex--block">
+                \mathbf{p}_1 = (p_{1,1}, p_{1,2}, p_{1,3}) \qquad \mathbf{p}_2 = (p_{2,1}, p_{2,2},
+                p_{2,3})
+              </div>
+              <span class="formula__name" style="margin-top: 0.75rem">The projected 2D point</span>
+              <div class="tex tex--block">
+                \by = P^T\bx \quad \text{where} \quad P = \begin{bmatrix} p_{1,1} &amp; p_{2,1} \\
+                p_{1,2} &amp; p_{2,2} \\ p_{1,3} &amp; p_{2,3} \end{bmatrix}
+              </div>
+              <span class="formula__name" style="margin-top: 0.75rem"
+                >Carrying out the matrix multiplication</span
+              >
+              <div class="tex tex--block">
+                \by = \begin{bmatrix} y_1 \\ y_2 \end{bmatrix} = \begin{bmatrix} p_{1,1}x_1 +
+                p_{1,2}x_2 + p_{1,3}x_3 \\ p_{2,1}x_1 + p_{2,2}x_2 + p_{2,3}x_3 \end{bmatrix}
+              </div>
+              <p class="formula__note">
+                Each 2D coordinate is a <strong>linear combination</strong> of the original 3D
+                coordinates.
+              </p>
+            </div>
+            <div class="callout ds-reveal">
+              <span class="callout__title">Challenge: beat PCA</span>
+              Scroll back to the 3D lab, switch the plane to <em>Your plane</em> and tilt it with
+              the sliders. The live <span class="tex">P</span> matrix updates as you move. How close
+              to the PCA variance can you get? (You can tie it. You can never beat it.)
+              <div id="pmatrix" style="margin-top: 0.75rem"></div>
+            </div>
+          </section>
+
+          <!-- ============ 3.5 ============ -->
+          <section class="block" id="eigen" aria-labelledby="eigen-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.5</p>
+              <h2 id="eigen-title">Mathematical formulation for PCA</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                Which is the projection from the original dataset space
+                <span class="tex">\mathbb{R}^n</span> to <span class="tex">\mathbb{R}^k</span>, with
+                <span class="tex">k &lt; n</span>, that summarizes the data at best? The
+                <strong>data distribution</strong> is properly described by the covariance matrix in
+                <span class="tex">\mathbb{R}^n</span>:
+              </p>
+            </div>
+            <div class="formula-row ds-reveal">
+              <div class="formula">
+                <span class="formula__name">Covariance matrix</span>
+                <div class="tex tex--block">\Sigma = \frac{1}{n}\sum (\bx - \mu)(\bx - \mu)^T</div>
+              </div>
+              <div class="formula">
+                <span class="formula__name">Each entry is a covariance</span>
+                <div class="tex tex--block">
+                  Cov(\bx, \by) = \frac{1}{n}\sum_{k=1}^{n}(x_k - \xb)(y_k - \yb)
+                </div>
+              </div>
+            </div>
+            <div class="prose ds-reveal">
+              <p>
+                We need to find the <span class="tex">\mathbb{R}^k</span> space where the projected
+                variance (i.e., the data distribution) is maximized. This can be solved as a
+                constrained optimization problem that maximizes the variance of the projected data,
+                called <strong>maximum variance projection</strong> or
+                <strong>Rayleigh quotient maximization</strong>:
+              </p>
+            </div>
+            <div class="formula ds-reveal">
+              <div class="tex tex--block">
+                \max_{\mathbf{v}} \; \frac{\mathbf{v}^T\Sigma\,\mathbf{v}}{\mathbf{v}^T\mathbf{v}}
+                \quad\Longrightarrow\quad \Sigma\,V_i = \lambda_i V_i
+              </div>
+            </div>
+            <div class="prose ds-reveal">
+              <p>
+                The solution is given by the transformation <span class="tex">V</span> determined by
+                the <strong>eigenvectors of the covariance matrix</strong>
+                <span class="tex">V = [V_1, \dots, V_n]</span>.
+              </p>
+              <ul>
+                <li>
+                  Eigenvectors <span class="tex">V</span> are directions that remain invariant (up
+                  to sign) under a linear transformation.
+                </li>
+                <li>
+                  In PCA, eigenvectors of the covariance matrix define a new
+                  <strong>orthogonal coordinate system</strong>.
+                </li>
+                <li>
+                  The factor by which they are scaled (due to the data distribution) is called the
+                  <strong>eigenvalue</strong>
+                  <span class="tex"
+                    >\boldsymbol\lambda = [\lambda_1, \lambda_2, \dots, \lambda_n]</span
+                  >.
+                </li>
+              </ul>
+              <p>
+                Each eigenvalue <span class="tex">\lambda_i</span> tells you how much variance lies
+                along its eigenvector, i.e.,
+                <strong>how stretched the cloud is along each axis</strong>: large eigenvalue →
+                important direction; small eigenvalue → less important.
+              </p>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">The matrix that stays a direction</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="eig-chart"></div></div>
+                <div class="lab__controls" id="eig-controls"></div>
+              </div>
+            </div>
+            <div class="prose ds-reveal">
+              <p>
+                <strong
+                  >The data distribution is exactly preserved under the eigenvector
+                  transformation</strong
+                >
+                (just expressed in a new coordinate system). The new coordinate system does not
+                apply any dimensionality reduction: data are still in
+                <span class="tex">\mathbb{R}^n</span> but the axes changed. We carried out a
+                <strong>change of basis</strong> in <span class="tex">\mathbb{R}^n</span>.
+              </p>
+              <p><strong>To carry out dimensionality reduction</strong> we:</p>
+              <ol>
+                <li>
+                  Order the eigenvectors <span class="tex">V_i</span> in descending order of the
+                  corresponding eigenvalues
+                  <span class="tex"
+                    >\boldsymbol\lambda = (\lambda_1, \lambda_2, \dots, \lambda_n)</span
+                  >
+                  with <span class="tex">\lambda_1 &gt; \lambda_2 &gt; \dots &gt; \lambda_n</span>.
+                </li>
+                <li>
+                  Pick the first <span class="tex">k</span> eigenvectors that explain enough
+                  variance.
+                </li>
+                <li>
+                  Given the percentage <span class="tex">t</span> of the informative content to be
+                  preserved (e.g., <span class="tex">t = 95\%</span>), select the minimum number of
+                  eigenvectors <span class="tex">k</span> such that the sum of the largest
+                  eigenvalues, with respect to the sum of all the eigenvalues, is higher than or
+                  equal to <span class="tex">t</span>:
+                </li>
+              </ol>
+            </div>
+            <div class="formula ds-reveal">
+              <div class="tex tex--block">
+                k = \operatorname{argmin}_z \left(
+                \frac{\sum_{i=1}^{z}\lambda_i}{\sum_{i=1}^{n}\lambda_i} \geq t \right)
+              </div>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">How many components for t% of the variance?</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div class="lab__plots lab__plots--2">
+                    <div>
+                      <p class="plot-title">Scree plot <small>λᵢ and cumulative share</small></p>
+                      <div id="scree"></div>
+                    </div>
+                    <div>
+                      <p class="plot-title">
+                        Covariance matrix Σ <small>(correlations if standardized)</small>
+                      </p>
+                      <div id="covmat"></div>
+                    </div>
+                  </div>
+                  <div id="scree-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="scree-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 3.6 ============ -->
+          <section class="block" id="retro" aria-labelledby="retro-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.6</p>
+              <h2 id="retro-title">Projecting and retro-projecting the data</h2>
+            </header>
+            <div class="formula-row ds-reveal">
+              <div class="formula">
+                <span class="formula__name">Projecting on the first k eigenvectors</span>
+                <div class="tex tex--block">\bz_k = V_k^T \bx</div>
+                <ul class="formula__note" style="padding-left: 1.1rem; margin: 0">
+                  <li>
+                    Data are represented in the <span class="tex">\mathbb{R}^k</span> data space
+                    with <span class="tex">k &lt; n</span>.
+                  </li>
+                  <li>Only the main components of the dataset are preserved.</li>
+                </ul>
+              </div>
+              <div class="formula">
+                <span class="formula__name">Retro-projecting to the original space</span>
+                <div class="tex tex--block">\tilde{\bx} = V_k \bz_k</div>
+                <ul class="formula__note" style="padding-left: 1.1rem; margin: 0">
+                  <li>
+                    Data are represented in the original <span class="tex">\mathbb{R}^n</span> data
+                    space.
+                  </li>
+                  <li>
+                    The original and the retro-projected points are different (<span class="tex"
+                      >\tilde{\bx} \neq \bx</span
+                    >) since “details” are lost in projection.
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div class="callout callout--note ds-reveal">
+              Two distinct points <span class="tex">\bx, \by \in \mathbb{R}^n</span> that have the
+              same first <span class="tex">k</span> components will be projected to the same point
+              <span class="tex">\bz \in \mathbb{R}^k</span> and retro-projected to the same point
+              <span class="tex">\tilde{\bx} = \tilde{\by} \in \mathbb{R}^n</span>. In the 3D lab,
+              drag the projection slider to 100% with drop lines on: every line ending at the same
+              spot on the plane is such a pair.
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Rebuild the Iris flowers from k components</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div id="recon-chart"></div>
+                  <div id="recon-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="recon-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 3.7 ============ -->
+          <section class="block" id="weights" aria-labelledby="weights-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.7</p>
+              <h2 id="weights-title">Reading the components: weights and biplot</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                <strong>Weights</strong>: each principal component is a linear combination of the
+                original dimensions:
+              </p>
+            </div>
+            <div class="formula ds-reveal">
+              <div class="tex tex--block">
+                z_j = V_j^T\bx = v_{1j}x_1 + v_{2j}x_2 + \dots + v_{nj}x_n
+              </div>
+              <ul class="formula__note" style="padding-left: 1.1rem; margin: 0.5rem 0 0">
+                <li>
+                  <span class="tex">v_{ij}</span>, the <span class="tex">i</span>-th element of the
+                  eigenvector <span class="tex">V_j</span>, is the weight of the original dimension
+                  <span class="tex">x_i</span> in the component <span class="tex">z_j</span>.
+                </li>
+                <li>
+                  <strong>Sign</strong>: + → <span class="tex">x_i</span> and
+                  <span class="tex">z_j</span> grow together; − → they move in opposite directions.
+                </li>
+                <li>
+                  <strong>Magnitude</strong>: since <span class="tex">\|V_j\| = 1</span>, then
+                  <span class="tex">\sum_i v_{ij}^2 = 1</span>, so
+                  <span class="tex">v_{ij}^2</span> is the share of <span class="tex">z_j</span> due
+                  to <span class="tex">x_i</span>.
+                </li>
+                <li>
+                  <strong>Loading</strong>: <span class="tex">v_{ij}\cdot\sqrt{\lambda_j}</span> is
+                  the correlation between <span class="tex">x_i</span> and
+                  <span class="tex">z_j</span> (standardized data).
+                </li>
+              </ul>
+            </div>
+            <div class="callout ds-reveal">
+              <span class="callout__title">Standardize the data first</span>
+              Otherwise the weights reflect the units of measure and the dimension with the largest
+              variance dominates the first component. Iris dataset, 4 standardized dimensions: PC1 ≈
+              <strong>flower size</strong> (petal length, petal width and sepal length have similar
+              positive weights); PC2 ≈ <strong>sepal width</strong>, the only dimension with a large
+              weight (0.92).
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Iris: weights of the first two components</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="weights-chart"></div></div>
+                <div class="lab__controls" id="weights-controls"></div>
+              </div>
+            </div>
+
+            <h3 class="ds-reveal">The biplot</h3>
+            <div class="prose ds-reveal">
+              <p>
+                A scatter plot of the reduced space <span class="tex">\mathbb{R}^k</span> that shows
+                together:
+              </p>
+              <ul>
+                <li>
+                  the points, i.e., the projected data <span class="tex">\bz = V_k^T\bx</span>;
+                </li>
+                <li>the original dimensions, one arrow for each <span class="tex">x_i</span>.</li>
+              </ul>
+              <p>
+                <strong>Where do the arrows come from?</strong> The unit vector
+                <span class="tex">\mathbf{e}_i</span> of the original axis
+                <span class="tex">x_i</span> is projected as
+                <span class="tex">V_k^T\mathbf{e}_i = (v_{i1}, \dots, v_{ik})</span>: the
+                <span class="tex">i</span>-th row of <span class="tex">V_k</span>, i.e., the weights
+                of <span class="tex">x_i</span> in the <span class="tex">k</span> components
+                (usually drawn as loadings, i.e., correlations).
+              </p>
+              <p><strong>How to read it</strong></p>
+              <ul>
+                <li>
+                  <strong>Direction</strong>: where <span class="tex">x_i</span> grows; points along
+                  the arrow have high values of <span class="tex">x_i</span>, points on the opposite
+                  side low values.
+                </li>
+                <li>
+                  <strong>Length</strong>: how well <span class="tex">x_i</span> is represented in
+                  <span class="tex">\mathbb{R}^k</span> (length² = share of its variance explained);
+                  a short arrow → <span class="tex">x_i</span> lies mostly in the discarded
+                  components.
+                </li>
+                <li>
+                  <strong>Angle between two arrows</strong>: its cosine ≈ correlation (0° positive,
+                  90° uncorrelated, 180° negative).
+                </li>
+                <li>
+                  Iris: petal length and width overlap (corr. 0.96) and point to
+                  <em>virginica</em>; sepal width forms an angle of ≈116° with them: cos = −0.43 =
+                  their correlation.
+                </li>
+              </ul>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Iris biplot: tap two arrows to measure their angle</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot"><div id="biplot"></div></div>
+                <div class="lab__controls" id="biplot-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 3.8 ============ -->
+          <section class="block" id="pca-work" aria-labelledby="work-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.8</p>
+              <h2 id="work-title">PCA at work, and when it fails</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <ol>
+                <li>Set 4 centroids in a 5-dimension dataspace.</li>
+                <li>Generate a 400-point dataset.</li>
+                <li>Apply PCA to 2D.</li>
+              </ol>
+            </div>
+            <div class="table-wrap ds-reveal">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Centroid</th>
+                    <th>Note</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>[0, 0, 0, 0, 0]</code></td>
+                    <td>blob 1</td>
+                  </tr>
+                  <tr>
+                    <td><code>[1, 1, 1, 1, 1]</code></td>
+                    <td>blob 2 (close to blob 1)</td>
+                  </tr>
+                  <tr>
+                    <td><code>[10, 10, 10, −10, −10]</code></td>
+                    <td>blob 3 (far away)</td>
+                  </tr>
+                  <tr>
+                    <td><code>[−10, −10, −10, 10, 10]</code></td>
+                    <td>blob 4 (far away)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="prose ds-reveal">
+              <p>
+                <strong>When does PCA fail?</strong> PCA approximates the data through a linear
+                subspace identified from the covariance structure. It is particularly effective when
+                the data form an approximately elongated, ellipsoidal cloud around that subspace. In
+                many cases this is not true:
+              </p>
+              <ul>
+                <li>
+                  Principal components summarize variance and linear dependence, but may fail to
+                  preserve nonlinear or local characteristics of the data distribution.
+                </li>
+                <li>Banana-, circular- and spiral-shaped datasets.</li>
+                <li>
+                  Adding 2 high-variance random features to the original dataset: PCA spends its
+                  components on the noise.
+                </li>
+              </ul>
+              <p>
+                In all these cases PCA loses relevant information and may yield misleading results.
+                A nonlinear transformation is necessary.
+              </p>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Four blobs in 5D, seen in 2D</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div id="blobs-chart"></div>
+                  <div id="blobs-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="blobs-controls"></div>
+              </div>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">
+                  Banana, circles, spiral: one dimension to tell them apart
+                </h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div class="lab__plots lab__plots--2">
+                    <div>
+                      <p class="plot-title">Original 2D data</p>
+                      <div id="shape-orig"></div>
+                    </div>
+                    <div>
+                      <p class="plot-title">Reduced to 1D <small>PCA vs t-SNE</small></p>
+                      <div id="shape-1d"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="lab__controls" id="shape-controls"></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ============ 3.9 ============ -->
+          <section class="block" id="tsne" aria-labelledby="tsne-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.9</p>
+              <h2 id="tsne-title">t-Distributed Stochastic Neighbor Embedding</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                t-SNE is a <span class="term">nonlinear dimensionality reduction</span> method that
+                preserves <strong>local neighborhood structure</strong>.
+              </p>
+              <ul>
+                <li>Mainly used to visualize high-dimensional data in 2D, 3D.</li>
+                <li>
+                  Reveals clusters and local neighborhoods: local structure is preserved, not global
+                  geometry.
+                </li>
+                <li>Handles non-linear structure.</li>
+                <li>
+                  t-SNE is not linear and does not preserve global geometry because it does not
+                  apply a single global transformation (like a matrix multiplication); instead, it
+                  <em>iteratively rearranges points</em> to match pairwise similarities using a
+                  nonlinear objective.
+                </li>
+              </ul>
+              <p>
+                It defines probability distributions over pairs of points in both the high- and the
+                low-dimensional space, and minimizes their mismatch by letting the system learn
+                <span class="tex">Q</span> from <span class="tex">P</span>.
+              </p>
+            </div>
+            <h3 class="ds-reveal">How does t-SNE work?</h3>
+            <div class="formula ds-reveal">
+              <span class="formula__name"
+                >1 · Convert high-dimensional distances into probabilities P</span
+              >
+              <p class="formula__note">
+                For each of the <span class="tex">N</span> points <span class="tex">\bx_i</span>,
+                define a probability distribution over all other points using a
+                <em>Gaussian kernel</em>:
+              </p>
+              <div class="tex tex--block">
+                p_{j|i} = \frac{\exp\left(-\|\bx_i - \bx_j\|^2 / 2\sigma_i^2\right)}{\sum_{k\neq
+                i}\exp\left(-\|\bx_i - \bx_k\|^2 / 2\sigma_i^2\right)}
+              </div>
+              <p class="formula__note">
+                Then symmetrize <span class="tex">P</span>. Nearby points get high probability;
+                distant points get near-zero.
+              </p>
+              <div class="tex tex--block">p_{ij} = \frac{p_{j|i} + p_{i|j}}{2N}</div>
+            </div>
+            <div class="formula ds-reveal">
+              <span class="formula__name"
+                >2 · Define a similar distribution Q in low dimensions</span
+              >
+              <p class="formula__note">Using a <em>t-Student kernel</em>:</p>
+              <div class="tex tex--block">
+                q_{ij} = \frac{\left(1 + \|\by_i - \by_j\|^2\right)^{-1}}{\sum_{k\neq l}\left(1 +
+                \|\by_k - \by_l\|^2\right)^{-1}}
+              </div>
+            </div>
+            <div class="formula ds-reveal">
+              <span class="formula__name"
+                >3 · Learn Q by minimizing the Kullback–Leibler divergence</span
+              >
+              <div class="tex tex--block">
+                KL(P\,\|\,Q) = \sum_{i\neq j} p_{ij}\log\frac{p_{ij}}{q_{ij}}
+              </div>
+              <p class="formula__note">
+                KL is minimized when <span class="tex">p_{ij} \approx q_{ij}</span>.
+              </p>
+            </div>
+            <div class="split ds-reveal">
+              <div class="card card--accent">
+                <h4>Perplexity</h4>
+                <p>
+                  <span class="tex">\sigma_i^2</span> varies for each point
+                  <span class="tex">\bx_i</span> depending on the
+                  <strong>perplexity</strong> parameter, which smoothly defines the “effective
+                  number of neighbors” each point considers.
+                </p>
+                <ul>
+                  <li>
+                    <strong>Low perplexity</strong> (e.g., 5–10): emphasizes very local structure
+                    and can produce fragmented clusters.
+                  </li>
+                  <li>
+                    <strong>Medium perplexity</strong> (e.g., 20–30): balanced view of local
+                    clusters.
+                  </li>
+                  <li>
+                    <strong>High perplexity</strong> (e.g., 40–100): captures broader/global
+                    structure but can merge small clusters.
+                  </li>
+                </ul>
+              </div>
+              <div class="card">
+                <h4>Kernel</h4>
+                <p>
+                  A kernel is a rule that turns the distance between two points into a similarity
+                  value: close points get high similarity, distant points get low similarity.
+                </p>
+              </div>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Live</span>
+                <span class="caps muted" id="tsne-status"></span>
+                <h3 class="lab__title">Watch Q learn P: t-SNE vs PCA on the 5D blobs</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div class="lab__plots lab__plots--2">
+                    <div>
+                      <p class="plot-title">PCA</p>
+                      <div id="tsne-pca"></div>
+                    </div>
+                    <div>
+                      <p class="plot-title">t-SNE <small id="tsne-iter"></small></p>
+                      <div id="tsne-chart"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="lab__controls" id="tsne-controls"></div>
+              </div>
+            </div>
+            <div class="prose ds-reveal">
+              <h4>When does t-SNE fail?</h4>
+              <ul>
+                <li>
+                  <strong>When you need a reusable mapping</strong> (out-of-sample data): t-SNE does
+                  not learn a function <span class="tex">f(x)</span>. You can't take a new point and
+                  map it into the existing embedding; you'd rerun t-SNE on the whole dataset.
+                </li>
+                <li>
+                  <strong>When global structure matters</strong>: t-SNE preserves local
+                  neighborhoods, not global geometry. Distances between clusters are often
+                  meaningless; cluster sizes may be distorted.
+                </li>
+                <li>
+                  <strong>When you want quantitative analysis</strong> (not just visualization): the
+                  axes have no meaning; distances are not reliable metrics.
+                </li>
+                <li>
+                  <strong>When results must be stable and reproducible</strong>: t-SNE depends on
+                  random initialization and is sensitive to hyperparameters (especially perplexity).
+                  Change the seed in the lab above and see.
+                </li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- ============ 3.10 ============ -->
+          <section class="block" id="uk" aria-labelledby="uk-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.10</p>
+              <h2 id="uk-title">Eating in the UK</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                What if our data have way more than 3 dimensions? Like, <strong>17</strong>
+                dimensions?! The table holds the average consumption of 17 types of food in grams
+                per person per week for every country in the UK.
+              </p>
+            </div>
+            <div class="table-wrap ds-reveal">
+              <table class="data-table data-table--hover" id="uk-table"></table>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Try it</span>
+                <h3 class="lab__title">Four countries, 17 foods, 2 components</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div class="lab__plots">
+                    <div>
+                      <p class="plot-title">PCA biplot</p>
+                      <div id="uk-biplot"></div>
+                    </div>
+                    <div>
+                      <p class="plot-title">PC1 / PC2 loadings</p>
+                      <div id="uk-loadings"></div>
+                    </div>
+                  </div>
+                  <div id="uk-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls" id="uk-controls"></div>
+              </div>
+            </div>
+            <div class="callout ds-reveal">
+              The Northern Irish eat way more grams of fresh potatoes and way fewer of fresh fruits,
+              cheese, fish and alcoholic drinks. That single fact is what separates Northern Ireland
+              from the other three along PC1.
+            </div>
+          </section>
+
+          <!-- ============ 3.11 ============ -->
+          <section class="block" id="politics" aria-labelledby="pol-title">
+            <header class="block__head ds-reveal">
+              <p class="block__index">3.11 · Boss level</p>
+              <h2 id="pol-title">The political compass and the spatial modeling of politics</h2>
+            </header>
+            <div class="prose ds-reveal">
+              <p>
+                The <span class="term">Political Compass</span> is a model used to represent
+                political ideology in a two-dimensional space, rather than the traditional single
+                left–right line. It is based on 62 propositions across economic and social axes:
+              </p>
+              <ul>
+                <li>Economic axis (left–right)</li>
+                <li>Social axis (authoritarian–libertarian)</li>
+              </ul>
+              <p>
+                The Political Compass goes beyond a dimensionality reduction problem, since it
+                <em>forces</em> political questions into the two axes. Let's instead create a
+                <strong>spatial model of political positions</strong>:
+              </p>
+              <ol>
+                <li>
+                  <strong>Define the questionnaire (10 dimensions).</strong> These questions
+                  represent the 10-dimensional feature space. Questions define the dataspace: if you
+                  change the questions everything will change. “To what extent do you agree with the
+                  following statements?”, e.g.:
+                  <ul>
+                    <li>
+                      “Lower taxes are more important than expanding social welfare programs.”
+                    </li>
+                    <li>“Immigration should be more strictly regulated and limited.”</li>
+                    <li>
+                      “Environmental protection should be prioritized even if it slows economic
+                      growth.”
+                    </li>
+                    <li>
+                      “The state should play a larger role in regulating the economy than the free
+                      market.”
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <strong>Collect answers from citizens.</strong> Each individual is a data point in
+                  the 10-dimensional space.
+                </li>
+                <li>
+                  <strong>Define political party profiles</strong> (Progressive, Conservative,
+                  Liberal, Populist). This encodes the ideological “position” of each party in the
+                  same feature space as individuals. Parties are “human feature engineering”, not
+                  data!
+                </li>
+                <li>
+                  <strong>Apply dimensionality reduction.</strong> Visualize global structure;
+                  identify general directions of variation in the data; analyze how individuals
+                  relate to political parties in the reduced space. Latent axes must be evaluated:
+                  they do not have a predefined meaning (e.g., left vs right).
+                </li>
+              </ol>
+            </div>
+            <div class="lab ds-reveal">
+              <div class="lab__head">
+                <span class="lab__kicker">Your turn</span>
+                <h3 class="lab__title">Answer the 10 questions, find your place on the map</h3>
+              </div>
+              <div class="lab__body lab__body--side">
+                <div class="lab__plot">
+                  <div id="pol-map"></div>
+                  <div id="pol-readout" style="padding: 0.75rem 0.25rem 0"></div>
+                </div>
+                <div class="lab__controls lab__controls--compact" id="pol-controls"></div>
+              </div>
+              <div class="table-wrap" style="margin: 0; border-width: 1px 0 0; border-radius: 0">
+                <table class="data-table" id="pol-dist"></table>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <nav class="pager" aria-label="Chapters">
+        <div class="pager__inner">
+          <a href="bivariate.html"
+            ><span class="pager__dir">← Level 02</span
+            ><span class="pager__name">Bivariate analysis</span></a
+          >
+          <a class="pager__next" href="about.html"
+            ><span class="pager__dir">The end →</span
+            ><span class="pager__name">About &amp; credits</span></a
+          >
+        </div>
+      </nav>
+    </main>
+
+    <footer class="site-footer">
+      <div class="ds-footer">
+        <a class="ds-credit" href="https://lucabonaldo.dev" target="_blank" rel="noopener"
+          >Made by <b>Luca Bonaldo</b></a
+        >
+        <p><a href="about.html">About &amp; credits</a></p>
+      </div>
+    </footer>
+
+    <script type="module" src="/src/pages/multivariate.js"></script>
+  </body>
+</html>
